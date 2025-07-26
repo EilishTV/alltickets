@@ -1,0 +1,179 @@
+@font-face {
+  font-family: "Unica.ttf";
+  src: url(assets/fonts/Neue\ Haas\ Unica.ttf,);
+}
+
+body {
+  margin: 15px;
+  padding: 15px;
+  font-family: "Unica.ttf";
+  font-family: Helvetica;
+  background-color: #f9f9f8;
+}
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  margin: -15px;
+  padding: 15px 32px;
+  background-color: rgba(249, 249, 248, 0.7);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(10px);
+  color: black;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  z-index: 999;
+  transform: translateY(8px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1); /* ⭐ línea agregada */
+}
+
+.navbar-logo img {
+  width: 8.0rem;
+  height: auto;
+  margin-top: 10px;
+  height: auto; /* ajustar según tu diseño */
+}
+
+.navbar-links {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 24px;
+}
+
+.navbar-links a {
+  text-decoration: none;
+  color: black;
+  transition: color 0.3s;
+}
+
+.navbar-links a:hover {
+  color: #555;
+}
+
+.navbar-links a i {
+  margin-left: 4px;
+  font-size: 0.8rem;
+}
+
+.navbar-cart {
+  margin-left: auto;
+  display: flex;
+  gap: 16px;
+}
+
+.navbar-cart a {
+  text-decoration: none;
+  color: black;
+  transition: color 0.3s;
+}
+
+.navbar-cart a:hover {
+  color: #555;
+}
+
+
+/**/
+
+.slider img {
+  width: 100%;
+  margin-top: 7%;
+  border-radius: 3px;
+}
+
+.productos-section {
+  margin-top: 50px;
+}
+
+.section-title {
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin: 20px 0 10px 0;
+  color: #21201C;
+  width: 100%;
+}
+
+.productos-container {
+  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* ← 2 columnas */
+  gap: 20px; /* o lo que quieras */
+}
+
+
+.producto {
+  flex: 1 1 calc(25% - 20px);
+  box-sizing: border-box;
+}
+
+.producto img {
+  width: 100%;
+  height: auto;
+  display: block;
+  background-color: #F2F2F1;
+  border-radius: 3px;
+  transition: transform 0.3s ease; /* ← importante para el efecto suave */
+}
+
+.img-zoom {
+  transition: transform 0.3s ease;
+}
+
+.img-zoom:hover {
+  transform: scale(1.05);
+}
+
+.producto-nombre {
+  text-align: left;
+  margin: 8px 0 0 0;
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: #21201C;
+}
+
+
+.producto-precio {
+  text-align: left;
+  font-size: 0.8rem;
+  color: blueviolet;
+  margin-top: 2px;
+}
+
+.imagen-contenedor {
+  position: relative;
+}
+
+.agotado-label {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: #F9F9F8;
+  color: #333;
+  font-size: 0.8rem;
+  font-weight: lighter;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  box-shadow: 1px 1px rgba(0, 0, 0, 0.1);
+}
+
+.marginn {
+  margin-top: 644%;
+}
+
+@media (max-width: 768px) {
+  .producto {
+    flex: 1 1 calc(50% - 20px);
+  }
+}
+
+@media (max-width: 480px) {
+  .producto {
+    flex: 1 1 100%;
+  }
+}
