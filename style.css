@@ -166,14 +166,13 @@ body {
   margin-top: 644%;
 }
 
-@media (max-width: 768px) {
-  .producto {
-    flex: 1 1 calc(50% - 20px);
-  }
-}
-
 @media (max-width: 480px) {
+  .productos-container {
+    grid-template-columns: 1fr; /* ← UNA sola columna en celulares */
+  }
+
   .producto {
     flex: 1 1 100%;
   }
 }
+
