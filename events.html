@@ -11,19 +11,28 @@
 
   <!-- NAVBAR -->
     <nav class="navbar">
+
         <div class="navbar-logo">
-            <img src="assets/images/logo.png"alt="">
+        <a href="index.html">
+            <img src="assets/images/logo.png" alt="Logo">
+        </a>
         </div>
+
         <div class="navbar-links">
             <a href="index.html">Eventos</a>
-            <a href="#">Buscar <i class="fa fa-search"></i></a>
+            <a href="#">Crea tu Evento</a>
             <a href="#">Contacto</a>
         </div>
+
         <div class="navbar-cart">
             <a href="#">Mis Entradas</a>
             <a href="#"><i class="fas fa-user"></i>  Ingresar</a>
         </div>
+
+        <div class="navbar-toggle" onclick="toggleMenu()">☰</div>
+        
     </nav>
+    
   <!-- CONTENIDO DEL EVENTO -->
   <div id="evento" class="evento-contenedor">
     <img id="imagen" src="" alt="" />
@@ -36,8 +45,17 @@
     <a href="index.html" target="_blank" class="event-button">Ver entradas</a>
   </div>
 
+
+    <script>
+      function toggleMenu() {
+       const links = document.querySelector('.navbar-links');
+       links.classList.toggle('show');
+     }
+    </script>
+
     <script src="eventos.js"></script>
     <script src="events.js"></script>
 
 </body>
 </html>
+
