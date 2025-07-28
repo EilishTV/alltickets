@@ -66,14 +66,20 @@ const Events = [
     img: "https://cdn.getcrowder.com/images/ac426427-501b-456c-b8e7-9a1293c71927-1920x720-aa-1.jpg",
     nombre: "Damiano David",
     lugar: "C. Art Media",
-    agotado: false
+    agotado: true
   },
   {
     img: "https://cdn.getcrowder.com/images/4d3f9d66-c328-4f47-9d1e-288c10f5977a-aa-banner-1920x720.jpg",
     nombre: "Lola Indigo",
     lugar: "C. Art Media",
     agotado: false
-  }
+  },
+    {
+    img: "https://i.postimg.cc/rsNPRfcK/wildflowerfest-banner.png",
+    nombre: "Wildflower Fest",
+    lugar: "The Roxy Live",
+    agotado: false
+  },
 ];
 
 crearSeccionProductos("", Events);
