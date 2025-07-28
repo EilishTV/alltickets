@@ -1,4 +1,3 @@
-
 const eventos = {
   "damiano-david": {
     nombre: "Damiano David",
