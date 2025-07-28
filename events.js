@@ -35,19 +35,14 @@ const eventos = {
     nombre: "Lola Indigo",
     img: "https://cdn.getcrowder.com/images/4d3f9d66-c328-4f47-9d1e-288c10f5977a-aa-banner-1920x720.jpg",
     lugar: "C. Art Media",
+    fechas: ["2/10/2025 21:00"],
     entradas: [
       {
-        nombre: "General",
-        precio: 2500,
+        nombre: "Preventa 1",
+        precio: 62000,
         agotado: false,
         linkPago: "https://www.mercadopago.com.ar/link-general-lola"
       },
-      {
-        nombre: "VIP",
-        precio: 5500,
-        agotado: false,
-        linkPago: "https://www.mercadopago.com.ar/link-vip-lola"
-      }
     ]
   },
   "wildflower-fest": {
