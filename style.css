@@ -1,11 +1,6 @@
-@font-face {
-  font-family: "Unica.ttf";
-  src: url(assets/fonts/Neue\ Haas\ Unica.ttf,);
-}
-
 body {
-  margin: 15px;
-  padding: 15px;
+  padding: 10px;
+  margin: 10px;
   font-family: "Unica.ttf";
   font-family: Helvetica;
   background-color: #f9f9f8;
