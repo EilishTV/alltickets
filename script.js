@@ -75,11 +75,12 @@ const Events = [
     agotado: false
   },
     {
-    img: "https://i.postimg.cc/rsNPRfcK/wildflowerfest-banner.png",
-    nombre: "Wildflower Fest",
-    lugar: "The Roxy Live",
+    img: "https://cdn.getcrowder.com/images/4458ebd9-942e-45ec-b302-9e45e21148e8-mb-1312-banneraa-1920x720.jpg?w=1920&format=webp",  
+    nombre: "Maria Becerra",
+    lugar: "Estadio River PLate",
     agotado: false
   },
 ];
 
 crearSeccionProductos("", Events);
+
