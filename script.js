@@ -61,26 +61,34 @@ function crearSeccionProductos(titulo, productos) {
 // Sección: Events
 // ======================
 
-const Events = [
-  {
-    img: "https://cdn.getcrowder.com/images/ac426427-501b-456c-b8e7-9a1293c71927-1920x720-aa-1.jpg",
-    nombre: "Damiano David",
-    lugar: "C. Art Media",
-    agotado: true
-  },
-  {
-    img: "https://cdn.getcrowder.com/images/4d3f9d66-c328-4f47-9d1e-288c10f5977a-aa-banner-1920x720.jpg",
-    nombre: "Lola Indigo",
-    lugar: "C. Art Media",
-    agotado: false
-  },
-    {
-    img: "https://cdn.getcrowder.com/images/4458ebd9-942e-45ec-b302-9e45e21148e8-mb-1312-banneraa-1920x720.jpg?w=1920&format=webp",  
-    nombre: "Maria Becerra",
-    lugar: "Estadio River PLate",
-    agotado: false
-  },
-];
+async function cargarEventos() {
+  const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/1WZnQmVeQGM1JnSzF_6Cq3ZOHaJf70lJtfHnyZIjLpjI/export?format=csv";
+  const response = await fetch(SHEET_CSV_URL);
+  const data = await response.text();
 
-crearSeccionProductos("", Events);
+  // Parsear CSV en objetos
+  const filas = data.split("\n").map(f => f.split(","));
+  const headers = filas[0].map(h => h.trim());
+  const eventos = filas.slice(1).map(fila => {
+    let obj = {};
+    headers.forEach((h, i) => {
+      obj[h] = fila[i] ? fila[i].trim() : "";
+    });
+    return obj;
+  });
+
+  // Adaptar a formato de productos
+  const productos = eventos.map(e => ({
+    img: e.img,
+    nombre: e.nombre,
+    lugar: e.lugar,
+    agotado: e.agotado.toUpperCase() === "TRUE"
+  }));
+
+  crearSeccionProductos("", productos);
+}
+
+cargarEventos();
+
+
 
