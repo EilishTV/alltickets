@@ -149,7 +149,7 @@ body {
   height: auto;
   display: block;
   background-color: #F2F2F1;
-  border-radius: 3px;
+  border-radius: 6px;
   transition: transform 0.3s ease; /* ← importante para el efecto suave */
 }
 
@@ -208,3 +208,4 @@ body {
     flex: 1 1 100%;
   }
 }
+
