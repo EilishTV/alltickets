@@ -1,78 +1,82 @@
+async function cargarEvento() {
+  const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/1WZnQmVeQGM1JnSzF_6Cq3ZOHaJf70lJtfHnyZIjLpjI/export?format=csv";
+  const response = await fetch(SHEET_CSV_URL);
+  const data = await response.text();
 
-const eventos = {
-  "damiano-david": {
-    nombre: "Damiano David",
-    img: "https://cdn.getcrowder.com/images/ac426427-501b-456c-b8e7-9a1293c71927-1920x720-aa-1.jpg",
-    lugar: "C. Art Media",
-    fechas: ["11/12/2025 21:00"],
-    entradas: [
-      {
-        nombre: "General Preventa 4",
-        precio: 85000,
-        agotado: true,
-        linkPago: "mercadopago.com"
-      },
-      {
-        nombre: "Preventa 1",
-        precio: 50000,
-        agotado: true,
-        linkPago: "mercadopago.com"
-      },
-      {
-        nombre: "Preventa 2",
-        precio: 60000,
-        agotado: true,
-        linkPago: "mercadopago.com"
-      },
-      {
-        nombre: "Preventa 3",
-        precio: 72000,
-        agotado: true,
-        linkPago: "mercadopago.com"
-      },
-    ]
-  },
-  "lola-indigo": {
-    nombre: "Lola Indigo",
-    img: "https://cdn.getcrowder.com/images/4d3f9d66-c328-4f47-9d1e-288c10f5977a-aa-banner-1920x720.jpg",
-    lugar: "C. Art Media",
-    fechas: "",
-    entradas: [
-      {
-        nombre: "General",
-        precio: 2500,
-        agotado: false,
-        linkPago: "https://www.mercadopago.com.ar/link-general-lola"
-      },
-      {
-        nombre: "VIP",
-        precio: 5500,
-        agotado: false,
-        linkPago: "https://www.mercadopago.com.ar/link-vip-lola"
-      }
-    ]
-  },
-  "maria-becerra": {
-    nombre: "Maria Becerra",
-    img: "https://cdn.getcrowder.com/images/4458ebd9-942e-45ec-b302-9e45e21148e8-mb-1312-banneraa-1920x720.jpg?w=1920&format=webp",
-    lugar: "Estadio River Plate",
-    fechas: ["13/12/25 21:00"],
-    entradas: [
-      {
-        nombre: "Campo Sivori",
-        precio: 65000,
-        agotado: false,
-        linkPago: "https://www.mercadopago.com.ar/link-general-wildflower"
-      },
-      {
-        nombre: "Campo Centario",
-        precio: 65000,
-        agotado: false,
-        linkPago: "https://www.mercadopago.com.ar/link-campo-wildflower"
-      }
-    ]
+  const filas = data.split("\n").map(f => f.split(","));
+  const headers = filas[0].map(h => h.trim());
+  const eventos = filas.slice(1).map(fila => {
+    let obj = {};
+    headers.forEach((h, i) => {
+      obj[h] = fila[i] ? fila[i].trim() : "";
+    });
+    return obj;
+  });
+
+  const params = new URLSearchParams(window.location.search);
+  const eventoId = params.get("id");
+
+  const evento = eventos.find(e =>
+    e.nombre.toLowerCase().replaceAll(" ", "-") === eventoId
+  );
+
+  const contenedorEvento = document.getElementById("evento");
+  const imagen = document.getElementById("imagen");
+  const selectFechas = document.querySelector(".event-dates");
+  const selectEntradas = document.querySelector(".entrada-tipos");
+  const botonComprar = document.querySelector(".event-button");
+
+  if (!evento) {
+    contenedorEvento.innerHTML = "<h2>⚠️ Evento no encontrado</h2>";
+    return;
   }
-};
+
+  document.title = evento.nombre;
+  imagen.src = evento.img;
+
+  // Manejo de fechas (pueden estar separadas por ;)
+  if (evento.fechas) {
+    selectFechas.innerHTML = "";
+    evento.fechas.split(";").forEach((fecha, i) => {
+      const option = document.createElement("option");
+      option.value = i;
+      option.textContent = fecha.trim();
+      selectFechas.appendChild(option);
+    });
+  }
+
+  // Manejo de entradas (columna JSON)
+  try {
+    const entradas = JSON.parse(evento.entradas);
+    selectEntradas.innerHTML = "";
+    entradas.forEach((entrada, i) => {
+      const option = document.createElement("option");
+      option.value = i;
+      option.textContent = entrada.nombre + (entrada.agotado ? " (Agotado)" : ` - $${entrada.precio}`);
+      option.disabled = entrada.agotado;
+      selectEntradas.appendChild(option);
+    });
+
+    // Actualizar botón
+    selectEntradas.addEventListener("change", () => {
+      const entradaSeleccionada = entradas[selectEntradas.value];
+      if (!entradaSeleccionada || entradaSeleccionada.agotado) {
+        botonComprar.textContent = "Agotado";
+        botonComprar.href = "#";
+        return;
+      }
+      botonComprar.textContent = "Comprar";
+      botonComprar.href = entradaSeleccionada.linkPago;
+      botonComprar.target = "_blank";
+    });
+
+  } catch (e) {
+    console.error("Error parseando entradas", e);
+  }
+}
+
+cargarEvento();
+
 
 // events.js
 
