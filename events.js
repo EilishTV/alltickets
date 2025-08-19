@@ -1,20 +1,40 @@
-// Crear loading
+// Crear overlay de carga
 const loadingDiv = document.createElement('div');
 loadingDiv.id = 'loading';
 loadingDiv.style.cssText = `
   position: fixed;
   top: 0; left: 0;
   width: 100%; height: 100%;
-  background-color: rgba(0, 0, 0, 0.8);
-  color: white;
+  background-color: #f9f9f8;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 2rem;
-  z-index: 9999;
+  z-index: 998;
 `;
-loadingDiv.textContent = "Cargando...";
+
+// Crear spinner
+const spinner = document.createElement('div');
+spinner.style.cssText = `
+  border: 6px solid #f3f3f3;
+  border-top: 6px solid #6200EA;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  animation: spin 1s linear infinite;
+`;
+loadingDiv.appendChild(spinner);
+
+// Agregar al body
 document.body.appendChild(loadingDiv);
+
+// Crear keyframes de spin desde JS
+const style = document.createElement('style');
+style.textContent = `
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}`;
+document.head.appendChild(style);
 
 // Función principal
 async function cargarEvento() {
@@ -96,8 +116,8 @@ async function cargarEvento() {
   } catch (error) {
     console.error("Error al cargar los eventos:", error);
   } finally {
-    // Ocultar loading cuando termine
-    loadingDiv.style.display = "none";
+    // Ocultar overlay cuando termine
+    loadingDiv.style.display = 'none';
   }
 }
 
