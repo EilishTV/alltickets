@@ -33,6 +33,23 @@
 
     <div id="mi-slider"></div>
 
+
+    <script>
+        const version = Date.now();
+
+        // Cargar CSS sin caché
+        const link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = "style.css?v=" + version;
+        document.head.appendChild(link);
+
+        // Cargar JS sin caché
+        const script = document.createElement("script");
+        script.src = "main.js?v=" + version;
+        document.body.appendChild(script);
+    </script>
+
+
     <script>
       function toggleMenu() {
        const links = document.querySelector('.navbar-links');
@@ -49,4 +66,6 @@
 
 </body>
 </html>
+
+
 
