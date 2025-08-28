@@ -65,15 +65,17 @@ const selectEntradas = document.querySelector(".entrada-tipos");
 const botonComprar = document.querySelector(".event-button");
 const card = document.querySelector(".event-card");
 
-if (!evento) {
-  contenedorEvento.innerHTML = "<h2 style='margin-top:6rem; color:black;'> ⚠️ ¡Evento no encontrado!</h2>";
+  if (!evento) {
+    contenedorEvento.innerHTML = "<h3 style='margin-top:6.5rem; color:#6200EA;font-weight: normal;'>¡No pudimos encontrar el evento!</h2>";
 
-// Agregar mensaje de caducidad debajo del estado
-const mensajeCaducidad = document.createElement("p");
-mensajeCaducidad.textContent = "Ups… no encontramos este evento. Puede que ya haya finalizado.";
-mensajeCaducidad.style.color = "black";
-mensajeCaducidad.style.marginTop = "1rem";
-contenedorEvento.appendChild(mensajeCaducidad);
+  // Agregar mensaje de caducidad debajo del estado
+  const mensajeCaducidad = document.createElement("p");
+  mensajeCaducidad.textContent = "El evento que buscás no existe o ya no está vigente.";
+  mensajeCaducidad.style.color = "grey";
+  mensajeCaducidad.style.marginTop = "0px";
+  mensajeCaducidad.style.fontSize = "1.0rem"; // achica el texto
+  contenedorEvento.appendChild(mensajeCaducidad);
+
 
   // 👇 Ocultar la tarjeta si el evento no existe
   if (card) {
