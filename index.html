@@ -6,6 +6,8 @@
     <title>All Tickets - Argentina</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
 </head>
 <body>
     <nav class="navbar">
@@ -18,7 +20,7 @@
 
         <div class="navbar-links">
             <a href="index.html">Eventos</a>
-            <a href="#">Crea tu Evento</a>
+            <a href="#">Informacion</a>
             <a href="#">Contacto</a>
         </div>
 
@@ -32,6 +34,23 @@
     </nav>
 
     <div id="mi-slider"></div>
+
+
+    <script>
+        const version = Date.now();
+
+        // Cargar CSS sin caché
+        const link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = "style.css?v=" + version;
+        document.head.appendChild(link);
+
+        // Cargar JS sin caché
+        const script = document.createElement("script");
+        script.src = "main.js?v=" + version;
+        document.body.appendChild(script);
+    </script>
+
 
     <script>
       function toggleMenu() {
@@ -49,7 +68,3 @@
 
 </body>
 </html>
-
-
-
-
