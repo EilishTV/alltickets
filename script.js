@@ -38,16 +38,16 @@ function crearSeccionProductos(titulo, productos) {
     // Agregamos clase img-zoom solo si no está agotado
     const claseZoom = !agotado ? 'img-zoom' : '';
 
-    productoDiv.innerHTML = `
-      <a href="events.html?id=${idEvento}">
-        <div class="imagen-contenedor">
-          ${agotado ? '<div class="agotado-label">Sold Out</div>' : ''}
-          <img src="${img}" alt="${nombre}" class="${claseZoom}">
-        </div>
-        <div class="producto-nombre">${nombre}</div>
-        <div class="producto-precio">${lugar}</div>
-      </a>
-    `;
+productoDiv.innerHTML = `
+  <a href="events.html?id=${idEvento}" class="producto-link">
+    <div class="imagen-contenedor">
+      ${agotado ? '<div class="agotado-label">Sold Out</div>' : ''}
+      <img src="${img}" alt="${nombre}" class="${claseZoom}">
+    </div>
+    <div class="producto-nombre"><span class="sin-subrayado">${nombre}</span></div>
+    <div class="producto-precio">${lugar}</div>
+  </a>
+`;
 
     contenedorProductos.appendChild(productoDiv);
   });
@@ -89,6 +89,4 @@ async function cargarEventos() {
 }
 
 cargarEventos();
-
-
 

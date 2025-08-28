@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   // === CONFIGURACIÓN ===
   const imagenes = [
+    "https://cdn.getcrowder.com/images/4458ebd9-942e-45ec-b302-9e45e21148e8-mb-1312-banneraa-1920x720.jpg?w=1920&format=webp",
     "https://cdn.getcrowder.com/images/0108b99e-9cc7-44a6-9cab-71e4460e158b-lolla-soldout-banneraa-1920x720-1-min.jpg",
     "https://cdn.getcrowder.com/images/2c298c07-dac1-4232-8080-704fac5256bb-gunsnroses-bannersaa-nuevafecha1920x720.jpg",
     "https://cdn.getcrowder.com/images/ce4820c2-c85f-4449-9a39-05dd2efc505b-a0db10ad-f301-4d46-ab9d-5042a3d44763-1920x720-wb-df-desktop.jpg?w=960&format=webp",
@@ -50,6 +51,8 @@ document.addEventListener("DOMContentLoaded", () => {
       border-radius: 3px;
       position: relative;
       user-select: none;
+      
+      
     }
 
     .slides-container {
@@ -57,6 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
       transition: transform 0.4s ease;
       will-change: transform;
       cursor: grab;
+     
     }
 
     .slides-container.dragging {
