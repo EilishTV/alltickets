@@ -23,8 +23,6 @@ spinner.style.cssText = `
   animation: spin 1s linear infinite;
 `;
 loadingDiv.appendChild(spinner);
-
-// Agregar al body
 document.body.appendChild(loadingDiv);
 
 // Crear keyframes de spin desde JS
@@ -39,42 +37,88 @@ document.head.appendChild(style);
 // Función principal
 async function cargarEvento() {
   const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/1WZnQmVeQGM1JnSzF_6Cq3ZOHaJf70lJtfHnyZIjLpjI/export?format=csv";
-  
+
   try {
     const response = await fetch(SHEET_CSV_URL);
-    const data = await response.text();
+    const csvText = await response.text();
 
-    const filas = data.split("\n").map(f => f.split(","));
-    const headers = filas[0].map(h => h.trim());
-    const eventos = filas.slice(1).map(fila => {
-      let obj = {};
-      headers.forEach((h, i) => {
-        obj[h] = fila[i] ? fila[i].trim() : "";
-      });
-      return obj;
+    // Parsear CSV con PapaParse
+    const result = Papa.parse(csvText, {
+      header: true,
+      skipEmptyLines: true
     });
 
-    const params = new URLSearchParams(window.location.search);
-    const eventoId = params.get("id");
-    const evento = eventos.find(e =>
-      e.nombre.toLowerCase().replaceAll(" ", "-") === eventoId
-    );
+    const eventos = result.data;
 
-    const contenedorEvento = document.getElementById("evento");
-    const imagen = document.getElementById("imagen");
-    const selectFechas = document.querySelector(".event-dates");
-    const selectEntradas = document.querySelector(".entrada-tipos");
-    const botonComprar = document.querySelector(".event-button");
+const params = new URLSearchParams(window.location.search);
+const eventoId = params.get("id");
 
-    if (!evento) {
-      contenedorEvento.innerHTML = "<h2>⚠️ Evento no encontrado</h2>";
-      return;
-    }
+// Buscar el evento según el nombre formateado
+const evento = eventos.find(e =>
+  e.nombre.toLowerCase().replaceAll(" ", "-") === eventoId
+);
 
+const contenedorEvento = document.getElementById("evento");
+const imagen = document.getElementById("imagen");
+const selectFechas = document.querySelector(".event-dates");
+const selectEntradas = document.querySelector(".entrada-tipos");
+const botonComprar = document.querySelector(".event-button");
+const card = document.querySelector(".event-card");
+
+if (!evento) {
+  contenedorEvento.innerHTML = "<h2 style='margin-top:6rem; color:black;'> ⚠️ ¡Evento no encontrado!</h2>";
+
+// Agregar mensaje de caducidad debajo del estado
+const mensajeCaducidad = document.createElement("p");
+mensajeCaducidad.textContent = "Ups… no encontramos este evento. Puede que ya haya finalizado.";
+mensajeCaducidad.style.color = "black";
+mensajeCaducidad.style.marginTop = "1rem";
+contenedorEvento.appendChild(mensajeCaducidad);
+
+  // 👇 Ocultar la tarjeta si el evento no existe
+  if (card) {
+    card.style.display = "none";
+  }
+  return;
+}
+
+// ======================
+// Si el evento existe
+// ======================
+imagen.src = evento.img;
+
+if (evento.estado) contenedorEvento.querySelector("#estado").textContent = evento.estado;
+
+
+// Cargar fechas en el select
+if (evento.fechas && Array.isArray(evento.fechas)) {
+  evento.fechas.forEach(fecha => {
+    const option = document.createElement("option");
+    option.textContent = fecha;
+    selectFechas.appendChild(option);
+  });
+}
+
+// Cargar tipos de entradas en el select
+if (evento.entradas && Array.isArray(evento.entradas)) {
+  evento.entradas.forEach(tipo => {
+    const option = document.createElement("option");
+    option.textContent = tipo;
+    selectEntradas.appendChild(option);
+  });
+}
+
+// Configurar botón comprar (opcional, depende de tu data)
+if (evento.link) {
+  botonComprar.href = evento.link;
+}
+
+
+    // Título e imagen
     document.title = evento.nombre;
     imagen.src = evento.img;
 
-    // Manejo de fechas
+    // Manejo de fechas (separadas por ;)
     if (evento.fechas) {
       selectFechas.innerHTML = "";
       evento.fechas.split(";").forEach((fecha, i) => {
@@ -85,9 +129,12 @@ async function cargarEvento() {
       });
     }
 
-    // Manejo de entradas
+    // Manejo de entradas (JSON dentro de la celda)
+    let entradas = [];
     try {
-      const entradas = JSON.parse(evento.entradas);
+      // Con PapaParse, la celda llega limpia, solo parseamos
+      entradas = JSON.parse(evento.entradas);
+
       selectEntradas.innerHTML = "";
       entradas.forEach((entrada, i) => {
         const option = document.createElement("option");
@@ -97,20 +144,31 @@ async function cargarEvento() {
         selectEntradas.appendChild(option);
       });
 
+      // Listener al cambiar de entrada
       selectEntradas.addEventListener("change", () => {
         const entradaSeleccionada = entradas[selectEntradas.value];
         if (!entradaSeleccionada || entradaSeleccionada.agotado) {
           botonComprar.textContent = "Agotado";
           botonComprar.href = "#";
+          botonComprar.classList.add("agotado");
+          botonComprar.style.pointerEvents = "none";
           return;
         }
         botonComprar.textContent = "Comprar";
         botonComprar.href = entradaSeleccionada.linkPago;
         botonComprar.target = "_blank";
+        botonComprar.classList.remove("agotado");
+        botonComprar.style.pointerEvents = "auto";
       });
 
+      // Inicializar botón en la primera entrada válida
+      if (entradas.length > 0) {
+        selectEntradas.selectedIndex = 0;
+        selectEntradas.dispatchEvent(new Event("change"));
+      }
+
     } catch (e) {
-      console.error("Error parseando entradas", e);
+      console.error("Error parseando entradas:", e, evento.entradas);
     }
 
   } catch (error) {
