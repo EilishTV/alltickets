@@ -45,7 +45,7 @@ productoDiv.innerHTML = `
       <img src="${img}" alt="${nombre}" class="${claseZoom}">
     </div>
     <div class="producto-nombre"><span class="sin-subrayado">${nombre}</span></div>
-    <div class="producto-precio">${lugar}</div>
+    <div class="producto-precio"><span class="sin-subrayado">${lugar}</span></div>
   </a>
 `;
 

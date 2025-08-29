@@ -182,6 +182,10 @@ body {
   display: inline-block;
 }
 
+.producto-precio span {
+  text-decoration: none !important;
+  display: inline-block;
+}
 
 
 .producto-precio {
