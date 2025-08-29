@@ -35,7 +35,7 @@ function createSlider(events) {
 
   const track = document.createElement("div");
   track.style.display = "flex";
-  track.style.transition = "transform 0.6s ease";
+  track.style.transition = "transform 1.0s ease";
   track.style.height = "100%";
 
   events.forEach(event => {
