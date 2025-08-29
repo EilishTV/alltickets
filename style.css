@@ -199,6 +199,23 @@ body {
   position: relative;
 }
 
+.imagen-contenedor {
+  width: 100%;
+  max-width: 1920px; /* ancho máximo deseado */
+  aspect-ratio: 16 / 6; /* relación 1920:720 = 16:6 */
+  overflow: hidden; /* recorta lo que sobresalga */
+  border-radius: 8px; /* opcional, si querés esquinas redondeadas */
+}
+
+.imagen-contenedor img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* recorta sin deformar */
+  display: block;
+}
+
+
+
 .agotado-label {
   position: absolute;
   top: 10px;

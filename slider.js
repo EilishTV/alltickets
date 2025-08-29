@@ -28,9 +28,9 @@ function createSlider(events) {
   slider.style.position = "relative";
   slider.style.overflow = "hidden";
   slider.style.width = "100%";
-  slider.style.height = "470px"; 
-  slider.style.marginTop = "80px"; 
-  slider.style.borderRadius = "12px"; 
+  slider.style.aspectRatio = "1920/720"; // Proporción exacta 1920x720
+  slider.style.marginTop = "80px";
+  slider.style.borderRadius = "12px";
   slider.style.boxShadow = "0 4px 12px rgba(0,0,0,0.3)";
 
   const track = document.createElement("div");
@@ -57,25 +57,25 @@ function createSlider(events) {
     overlay.style.background = "linear-gradient(to right, rgba(0,0,0,0.65), rgba(0,0,0,0))";
     overlay.style.borderRadius = "12px";
 
-    // Texto / datos
+    // Texto / datos responsive
     const info = document.createElement("div");
     info.style.position = "absolute";
-    info.style.bottom = "40px";
-    info.style.left = "50px";
+    info.style.bottom = "5%";
+    info.style.left = "5%";
     info.style.color = "white";
     info.style.fontFamily = "Arial, sans-serif";
     info.innerHTML = `
       <a href="events.html?id=${event.idEvento}" style="text-decoration:none; color:white;">
-        <h2 style="font-size:2rem; margin:0;">${event.nombre}</h2>
+        <h2 style="font-size:2vw; margin:0;">${event.nombre}</h2>
       </a>
-      <p style="margin:5px 0; font-size:1rem;">${event.lugar}</p>
+      <p style="margin:0.5em 0; font-size:1vw;">${event.lugar}</p>
       <a href="events.html?id=${event.idEvento}" style="
         display:inline-block;
-        margin-top:10px;
+        margin-top:1em;
         background:#fff;
         color:#000;
-        padding:10px 20px;
-        border-radius:8px;
+        padding:0.5em 1em;
+        border-radius:0.5em;
         font-weight:bold;
         text-decoration:none;
         transition:0.3s;
