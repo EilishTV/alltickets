@@ -60,8 +60,8 @@ function createSlider(events) {
     // Texto / datos responsive
     const info = document.createElement("div");
     info.style.position = "absolute";
-    info.style.bottom = "5%";
-    info.style.left = "5%";
+    info.style.bottom = "7%";
+    info.style.left = "3%";
     info.style.color = "white";
     info.style.fontFamily = "Arial, sans-serif";
     info.innerHTML = `
