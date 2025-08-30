@@ -121,9 +121,14 @@ body {
 }
 
 .evento-contenedor img {
-  max-width: 100%;
-  margin-top: 3.9rem;
+  width: 100%;          /* ocupa todo el ancho disponible */
+  aspect-ratio: 1920 / 720;
+  object-fit: cover;
+  display: block;
+  margin: 3.9rem auto 0 auto;
 }
+
+
 
 #estado {
   font-size: 20px;
@@ -173,3 +178,4 @@ body {
   background-color: white;
   color: black;
 }
+
