@@ -1,13 +1,15 @@
+/* ========================= */
+/* GLOBAL                     */
+/* ========================= */
 body {
   font-family: Helvetica, sans-serif;
   background-color: #f9f9f8;
   margin: 0%;
-  
 }
 
-/* NAVBAR */
-
-
+/* ========================= */
+/* NAVBAR                     */
+/* ========================= */
 .navbar {
   position: fixed;
   top: 0;
@@ -25,14 +27,13 @@ body {
   font-size: 0.9rem;
   z-index: 999;
   transform: translateY(8px);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1); /* ⭐ línea agregada */
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .navbar-logo img {
   width: 8.0rem;
-  height: auto;
   margin-top: 10px;
-  height: auto; /* ajustar según tu diseño */
+  height: auto;
 }
 
 .navbar-links {
@@ -81,16 +82,17 @@ body {
   cursor: pointer;
 }
 
+/* Navbar responsive */
 @media (max-width: 480px) {
   .navbar-links {
     display: none;
     position: absolute;
     top: 100%;
-    right: -4.0rem; /* ✅ lo abrimos desde la derecha */
+    right: -4.0rem;
     left: auto;
     background: #f9f9f8;
     flex-direction: column;
-    align-items: flex-start; /* ✅ alineamos a la derecha */
+    align-items: flex-start;
     gap: 16px;
     padding: 16px 32px;
     border-top: 1px solid rgba(0, 0, 0, 0.1);
@@ -102,7 +104,7 @@ body {
   }
 
   .navbar-links a {
-    color: #000; /* ✅ color negro asegurado */
+    color: #000;
   }
 
   .navbar-toggle {
@@ -112,8 +114,9 @@ body {
   }
 }
 
-
-/* CONTENIDO DEL EVENTO */
+/* ========================= */
+/* CONTENIDO DEL EVENTO       */
+/* ========================= */
 .evento-contenedor {
   margin: 0 auto;
   text-align: center;
@@ -121,25 +124,26 @@ body {
 }
 
 .evento-contenedor img {
-  width: 100%;          /* ocupa todo el ancho disponible */
+  width: 100%;
   aspect-ratio: 1920 / 720;
   object-fit: cover;
   display: block;
   margin: 3.9rem auto 0 auto;
 }
 
-
-
 #estado {
   font-size: 20px;
   font-weight: bold;
 }
 
+/* ========================= */
+/* CARD DE SELECTS           */
+/* ========================= */
 .event-card {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 12px;
+  gap: 0; /* ✅ sin separación lateral */
   margin-top: -24px;
   padding: 16px;
   border: 1px solid #ddd;
@@ -149,33 +153,102 @@ body {
   border: 1px solid rgb(177, 176, 176);
 }
 
-.event-dates {
-  width: 60%;
+/* Estilo general para todos los selects */
+.event-card select {
+  flex: 1;
+  min-width: 160px;
   padding: 12px;
   border: 1px solid #ccc;
-  font-size: 1rem;
+  font-size: 0.95rem;
+  background-color: #fff;
+  color: #333;
+  cursor: pointer;
+  transition: border 0.2s, box-shadow 0.2s;
+  appearance: none; /* ✅ quitamos flecha default */
+  background-image: url("data:image/svg+xml;utf8,<svg fill='gray' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
 }
 
-.event-button {
+.event-card select:focus {
+  border-color: #6200ea;
+  box-shadow: 0 0 4px rgba(98, 0, 234, 0.3);
+  outline: none;
+}
+
+/* Botón comprar */
+.event-card .event-button {
   padding: 12px 24px;
   background-color: #6200ea;
   color: #fff;
   text-decoration: none;
   transition: background-color 0.3s;
+  flex-shrink: 0;
 }
 
-.event-button:hover {
+.event-card .event-button:hover {
   background-color: #4500b5;
 }
 
-/**/
-
-.entrada-tipos {
-  width: 35%;
+/* ========================= */
+/* SELECTS ESPECÍFICOS       */
+/* ========================= */
+.event-card select.event-sector,
+.event-card select.event-tarifa,
+.event-card select.event-cantidad {
+  flex: 1;
+  min-width: 120px;
   padding: 12px;
   border: 1px solid #ccc;
-  font-size: 1rem;
-  background-color: white;
-  color: black;
+  font-size: 0.95rem;
+  background-color: #fff;
+  color: #333;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg fill='gray' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
 }
 
+/* ========================= */
+/* RESPONSIVE                 */
+/* ========================= */
+@media (max-width: 768px) {
+  .event-card {
+    flex-direction: column; /* Apilar verticalmente */
+    align-items: stretch;   /* Que los selects ocupen todo el ancho disponible */
+    gap: 12px;              /* Separación entre elementos */
+  }
+
+  .event-card select,
+  .event-card .event-button {
+    flex: none;             /* Que no se estiren lateralmente */
+    width: 100%;            /* Ocupa todo el ancho de la card */
+  }
+}
+
+/* ========================= */
+/* RESPONSIVE                 */
+/* ========================= */
+@media (max-width: 768px) {
+  .event-card {
+    flex-direction: column; /* Apilar verticalmente */
+    align-items: stretch;   /* Que los selects y botón ocupen todo el ancho */
+    gap: 12px;              /* Separación entre elementos */
+    text-align: center;
+  }
+
+  .event-card select,
+  .event-card .event-button {
+    flex: none;            
+    width: 100%;           /* Ocupa todo el ancho */
+    box-sizing: border-box; /* Padding incluido dentro del ancho */
+    margin: 0;              /* Quitar posibles márgenes */
+  }
+
+  .event-card .event-button {
+    flex-shrink: 1;         /* Permite que se adapte al ancho */
+  }
+}
