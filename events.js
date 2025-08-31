@@ -17,6 +17,7 @@ spinner.style.cssText = `
 `;
 loadingDiv.appendChild(spinner);
 document.body.appendChild(loadingDiv);
+
 const style = document.createElement('style');
 style.textContent = `@keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}`;
 document.head.appendChild(style);
@@ -54,7 +55,14 @@ async function cargarEvento() {
     card.insertBefore(selectCantidad, botonComprar);
 
     if (!evento) {
-      contenedorEvento.innerHTML = "<h3 style='margin-top:6.5rem; color:#6200EA;'>¡No pudimos encontrar el evento!</h3>";
+      contenedorEvento.innerHTML = `
+        <h3 style="margin-top:6.5rem; color:#6200EA; font-weight:normal;">
+          ¡No pudimos encontrar el evento!
+        </h3>
+        <p style="margin-top:1rem; color:#333;">
+          Posiblemente este ya finalizó o nunca existió.
+        </p>
+      `;
       if (card) card.style.display = "none";
       return;
     }
@@ -73,7 +81,7 @@ async function cargarEvento() {
       });
     }
 
-    // Sectores
+    // Sectores y tarifas
     const sectores = evento.sectores ? evento.sectores.split(";") : [];
     const tarifas = evento.tarifas ? evento.tarifas.split(";") : [];
     const cantidades = evento.cantidad ? evento.cantidad.split(";") : [];
@@ -84,14 +92,14 @@ async function cargarEvento() {
       const index = selectSectores.selectedIndex;
       if (index >= 0) {
         const tarifa = tarifas[index] || "0";
-        const cantidad = cantidades[index] || "0";
+
         const optionTarifa = document.createElement("option");
         optionTarifa.value = tarifa;
         optionTarifa.textContent = `$${tarifa}`;
         selectTarifas.appendChild(optionTarifa);
 
-        selectCantidad.innerHTML = "";
-        for (let i = 1; i <= parseInt(cantidad); i++) {
+        // Cantidad fija hasta 4
+        for (let i = 1; i <= 4; i++) {
           const optionCantidad = document.createElement("option");
           optionCantidad.value = i;
           optionCantidad.textContent = i;
@@ -106,52 +114,83 @@ async function cargarEvento() {
       option.textContent = sec;
       selectSectores.appendChild(option);
     });
-
     selectSectores.addEventListener("change", actualizarTarifaCantidad);
     if (sectores.length > 0) {
       selectSectores.selectedIndex = 0;
       actualizarTarifaCantidad();
     }
 
-    // Entradas (JSON con nombre, precio, link)
-    let entradas = [];
-    try {
-      entradas = JSON.parse(evento.entradas || "[]");
-      const selectEntradas = document.querySelector(".entrada-tipos");
-      selectEntradas.innerHTML = "";
-      entradas.forEach((entrada, i) => {
-        const option = document.createElement("option");
-        option.value = i;
-        option.textContent = `${entrada.nombre} - $${entrada.precio}`;
-        if (entrada.agotado) {
-          option.textContent += " (Agotado)";
-          option.disabled = true;
-        }
-        selectEntradas.appendChild(option);
-      });
+    // Verificar si el evento está agotado
+    if (evento.agotado && evento.agotado.toUpperCase() === "TRUE") {
+      // Ocultar todos los selects
+      selectSectores.style.display = "none";
+      selectTarifas.style.display = "none";
+      selectCantidad.style.display = "none";
+      selectFechas.style.display = "none";
 
-      selectEntradas.addEventListener("change", () => {
-        const entradaSel = entradas[selectEntradas.value];
-        if (!entradaSel || entradaSel.agotado) {
-          botonComprar.textContent = "Agotado";
-          botonComprar.href = "#";
-          botonComprar.classList.add("agotado");
-          botonComprar.style.pointerEvents = "none";
-          return;
-        }
-        botonComprar.textContent = "Comprar";
-        botonComprar.href = entradaSel.linkPago;
-        botonComprar.target = "_blank";
-        botonComprar.classList.remove("agotado");
-        botonComprar.style.pointerEvents = "auto";
-      });
+// Crear div AGOTADO ancho completo
+const divAgotado = document.createElement("div");
+divAgotado.textContent = "AGOTADO";
+divAgotado.style.color = "#fff";
+divAgotado.style.backgroundColor = "#6200EA";
+divAgotado.style.padding = "1rem";
+divAgotado.style.textAlign = "center";
+divAgotado.style.fontWeight = "bold";
+divAgotado.style.width = "calc(100% - 2rem)";
+divAgotado.style.margin = "0 auto 1rem auto";
+divAgotado.style.border = "2px solid #fff"; // o "#eee"
+divAgotado.style.boxSizing = "border-box"; // para que respete el padding
+divAgotado.style.marginBottom = "1rem";
 
-      if (entradas.length > 0) {
-        selectEntradas.selectedIndex = 0;
-        selectEntradas.dispatchEvent(new Event("change"));
+// Borde gris de 1px
+divAgotado.style.border = "1px solid #CCCCCC";
+
+card.insertBefore(divAgotado, botonComprar);
+
+
+      // Ocultar botón de comprar
+      botonComprar.style.display = "none";
+    } else {
+      // Entradas (solo si el evento no está agotado)
+      let entradas = [];
+      try {
+        entradas = JSON.parse(evento.entradas || "[]");
+        const selectEntradas = document.querySelector(".entrada-tipos");
+        selectEntradas.innerHTML = "";
+        entradas.forEach((entrada, i) => {
+          const option = document.createElement("option");
+          option.value = i;
+          option.textContent = `${entrada.nombre} - $${entrada.precio}`;
+          if (entrada.agotado) {
+            option.textContent += " (Agotado)";
+            option.disabled = true;
+          }
+          selectEntradas.appendChild(option);
+        });
+
+        selectEntradas.addEventListener("change", () => {
+          const entradaSel = entradas[selectEntradas.value];
+          if (!entradaSel || entradaSel.agotado) {
+            botonComprar.textContent = "Agotado";
+            botonComprar.href = "#";
+            botonComprar.classList.add("agotado");
+            botonComprar.style.pointerEvents = "none";
+            return;
+          }
+          botonComprar.textContent = "Comprar";
+          botonComprar.href = entradaSel.linkPago;
+          botonComprar.target = "_blank";
+          botonComprar.classList.remove("agotado");
+          botonComprar.style.pointerEvents = "auto";
+        });
+
+        if (entradas.length > 0) {
+          selectEntradas.selectedIndex = 0;
+          selectEntradas.dispatchEvent(new Event("change"));
+        }
+      } catch (err) {
+        console.error("Error parseando entradas:", err);
       }
-    } catch (err) {
-      console.error("Error parseando entradas:", err);
     }
 
   } catch (err) {
@@ -160,4 +199,5 @@ async function cargarEvento() {
     loadingDiv.style.display = "none";
   }
 }
+
 cargarEvento();
