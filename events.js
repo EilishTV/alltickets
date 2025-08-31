@@ -19,7 +19,9 @@ loadingDiv.appendChild(spinner);
 document.body.appendChild(loadingDiv);
 
 const style = document.createElement('style');
-style.textContent = `@keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}`;
+style.textContent = `
+@keyframes spin {0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+`;
 document.head.appendChild(style);
 
 async function cargarEvento() {
@@ -122,36 +124,31 @@ async function cargarEvento() {
 
     // Verificar si el evento está agotado
     if (evento.agotado && evento.agotado.toUpperCase() === "TRUE") {
-      // Ocultar todos los selects
+      // Ocultar selects y botón
       selectSectores.style.display = "none";
       selectTarifas.style.display = "none";
       selectCantidad.style.display = "none";
       selectFechas.style.display = "none";
-
-// Crear div AGOTADO ancho completo
-const divAgotado = document.createElement("div");
-divAgotado.textContent = "AGOTADO";
-divAgotado.style.color = "#fff";
-divAgotado.style.backgroundColor = "#6200EA";
-divAgotado.style.padding = "1rem";
-divAgotado.style.textAlign = "center";
-divAgotado.style.fontWeight = "bold";
-divAgotado.style.width = "calc(100% - 2rem)";
-divAgotado.style.margin = "0 auto 1rem auto";
-divAgotado.style.border = "2px solid #fff"; // o "#eee"
-divAgotado.style.boxSizing = "border-box"; // para que respete el padding
-divAgotado.style.marginBottom = "1rem";
-
-// Borde gris de 1px
-divAgotado.style.border = "1px solid #CCCCCC";
-
-card.insertBefore(divAgotado, botonComprar);
-
-
-      // Ocultar botón de comprar
       botonComprar.style.display = "none";
+
+      // Crear div AGOTADO
+      const divAgotado = document.createElement("div");
+      divAgotado.textContent = "AGOTADO";
+      divAgotado.style.width = "100%";
+      divAgotado.style.padding = "1rem";
+      divAgotado.style.textAlign = "center";
+      divAgotado.style.fontWeight = "bold";
+      divAgotado.style.backgroundColor = "#6200EA";
+      divAgotado.style.color = "#fff";
+      divAgotado.style.border = "1px solid #CCCCCC";
+      divAgotado.style.boxSizing = "border-box";
+      divAgotado.style.display = "block";
+      divAgotado.style.margin = "0 0 1rem 0";
+
+      // Insertar AGOTADO al inicio del card
+      card.insertBefore(divAgotado, card.firstChild);
     } else {
-      // Entradas (solo si el evento no está agotado)
+      // Entradas (solo si no está agotado)
       let entradas = [];
       try {
         entradas = JSON.parse(evento.entradas || "[]");
