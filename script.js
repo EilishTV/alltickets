@@ -1,12 +1,37 @@
+// Loader
+const loadingDiv = document.createElement('div');
+loadingDiv.id = 'loading';
+loadingDiv.style.cssText = `
+  position: fixed; top:0; left:0;
+  width:100%; height:100%;
+  background-color:#f9f9f8;
+  display:flex; justify-content:center; align-items:center;
+  z-index:999;
+`;
+const spinner = document.createElement('div');
+spinner.style.cssText = `
+  border:6px solid #f3f3f3;
+  border-top:6px solid #6200EA;
+  border-radius:50%;
+  width:30px; height:30px;
+  animation:spin 1s linear infinite;
+`;
+loadingDiv.appendChild(spinner);
+document.body.appendChild(loadingDiv);
 
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes spin {0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+`;
+document.head.appendChild(style);
+
+// Crear sección de productos
 function crearSeccionProductos(titulo, productos) {
   const containerGeneral = document.getElementById('productos-container');
 
-  // Crear contenedor de la sección
   const seccion = document.createElement('div');
   seccion.classList.add('productos-section');
 
-  // Título
   if (titulo && titulo.trim() !== "") {
     const h2 = document.createElement('h2');
     h2.classList.add('section-title');
@@ -14,16 +39,13 @@ function crearSeccionProductos(titulo, productos) {
     seccion.appendChild(h2);
   }
 
-  // Contenedor de productos
   const contenedorProductos = document.createElement('div');
   contenedorProductos.classList.add('productos-container');
 
-  // Recorrer productos
   productos.forEach(({ img, nombre, lugar, precio, agotado }) => {
     const productoDiv = document.createElement('div');
     productoDiv.classList.add('producto');
 
-    // Crear ID para el evento desde el nombre
     const idEvento = nombre
       .toLowerCase()
       .replaceAll(" ", "-")
@@ -36,7 +58,6 @@ function crearSeccionProductos(titulo, productos) {
       .replaceAll("ú", "u")
       .replaceAll("ñ", "n");
 
-    // Agregamos clase img-zoom solo si no está agotado
     const claseZoom = !agotado ? 'img-zoom' : '';
 
     productoDiv.innerHTML = `
@@ -57,25 +78,21 @@ function crearSeccionProductos(titulo, productos) {
   containerGeneral.appendChild(seccion);
 }
 
-// ======================
-// Sección: Events
-// ======================
+// Cargar CSV
 async function cargarEventos() {
   const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/1WZnQmVeQGM1JnSzF_6Cq3ZOHaJf70lJtfHnyZIjLpjI/export?format=csv";
   try {
     const response = await fetch(SHEET_CSV_URL);
     const csvText = await response.text();
 
-    // Parsear CSV con PapaParse
     const result = Papa.parse(csvText, { header: true, skipEmptyLines: true });
     const eventos = result.data;
 
-    // Adaptar a formato de productos
     const productos = eventos.map(e => ({
       img: e.img,
       nombre: e.nombre,
       lugar: e.lugar,
-      precio: e.precio,  // nueva columna precio
+      precio: e.precio,
       agotado: (e.agotado || "").toUpperCase() === "TRUE"
     }));
 
@@ -83,8 +100,9 @@ async function cargarEventos() {
 
   } catch (err) {
     console.error("Error cargando CSV:", err);
+  } finally {
+    document.getElementById('loading').remove();
   }
 }
 
 cargarEventos();
-

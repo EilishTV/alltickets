@@ -132,7 +132,7 @@ async function cargarEvento() {
       botonComprar.style.display = "none";
 
       // Crear div AGOTADO
-      const divAgotado = document.createElement("div");
+      const divAgotado = document.createElement("div");                                                                 
       divAgotado.textContent = "AGOTADO";
       divAgotado.style.width = "100%";
       divAgotado.style.padding = "1rem";
