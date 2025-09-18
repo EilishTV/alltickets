@@ -144,35 +144,39 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 0; /* ✅ sin separación lateral */
+  gap: 0; 
   margin-top: -20px;
-  padding: 16px;
+  padding: 10px;
   border: 1px solid #ccc;
   background-color: #fff;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
   max-width: 100%;
-  border: 1px solid #ccc;
+  box-sizing: border-box;
 }
 
-/* Estilo general para todos los selects */
-.event-card select {
+/* ========================= */
+/* SELECTS UNIFICADOS        */
+/* ========================= */
+.event-card select,
+.event-dates {
   flex: 1;
-  min-width: 160px;
+  min-width: 120px;
   padding: 12px;
   border: 1px solid #ccc;
   font-size: 0.95rem;
   background-color: #fff;
   color: #333;
   cursor: pointer;
-  transition: border 0.2s, box-shadow 0.2s;
-  appearance: none; /* ✅ quitamos flecha default */
+  appearance: none;
   background-image: url("data:image/svg+xml;utf8,<svg fill='gray' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
   background-repeat: no-repeat;
   background-position: right 10px center;
   background-size: 16px;
+  transition: border 0.2s, box-shadow 0.2s;
 }
 
-.event-card select:focus {
+.event-card select:focus,
+.event-dates:focus {
   border-color: #6200ea;
   box-shadow: 0 0 4px rgba(98, 0, 234, 0.3);
   outline: none;
@@ -193,64 +197,25 @@ body {
 }
 
 /* ========================= */
-/* SELECTS ESPECÍFICOS       */
-/* ========================= */
-.event-card select.event-sector,
-.event-card select.event-tarifa,
-.event-card select.event-cantidad {
-  flex: 1;
-  min-width: 120px;
-  padding: 12px;
-  border: 1px solid #ccc;
-  font-size: 0.95rem;
-  background-color: #fff;
-  color: #333;
-  cursor: pointer;
-  appearance: none;
-  background-image: url("data:image/svg+xml;utf8,<svg fill='gray' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
-  background-repeat: no-repeat;
-  background-position: right 10px center;
-  background-size: 16px;
-}
-
-/* ========================= */
 /* RESPONSIVE                 */
 /* ========================= */
 @media (max-width: 768px) {
   .event-card {
-    flex-direction: column; /* Apilar verticalmente */
-    align-items: stretch;   /* Que los selects ocupen todo el ancho disponible */
-    gap: 12px;              /* Separación entre elementos */
-  }
-
-  .event-card select,
-  .event-card .event-button {
-    flex: none;             /* Que no se estiren lateralmente */
-    width: 100%;            /* Ocupa todo el ancho de la card */
-  }
-}
-
-/* ========================= */
-/* RESPONSIVE                 */
-/* ========================= */
-@media (max-width: 768px) {
-  .event-card {
-    flex-direction: column; /* Apilar verticalmente */
-    align-items: stretch;   /* Que los selects y botón ocupen todo el ancho */
-    gap: 12px;              /* Separación entre elementos */
+    flex-direction: column; 
+    align-items: stretch;
+    gap: 12px;
     text-align: center;
   }
 
   .event-card select,
   .event-card .event-button {
-    flex: none;            
-    width: 100%;           /* Ocupa todo el ancho */
-    box-sizing: border-box; /* Padding incluido dentro del ancho */
-    margin: 0;              /* Quitar posibles márgenes */
+    flex: none;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0;
   }
 
   .event-card .event-button {
-    flex-shrink: 1;         /* Permite que se adapte al ancho */
+    flex-shrink: 1;
   }
 }
-
