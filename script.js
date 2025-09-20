@@ -10,7 +10,7 @@ const navbarHTML = `
   <div class="navbar-links">
     <a href="/index.html">Eventos</a>
     <a href="#">Search</a>
-    <a href="/pages/contact">Contacto</a>
+    <a href="pages/contact">Contacto</a>
   </div>
 
   <div class="navbar-cart">
@@ -137,5 +137,6 @@ async function cargarEventos() {
     document.getElementById('loading').remove();
   }
 }
+
 
 cargarEventos();
