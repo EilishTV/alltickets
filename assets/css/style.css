@@ -3,20 +3,24 @@
   src: url('../fonts/static/Inter_18pt-Regular.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
-  font-family: 'Intel Regular Bold';
+  font-family: 'Intel';
   src: url('../fonts/static/Inter_18pt-Bold.ttf') format('truetype');
   font-weight: 700;
   font-style: normal;
+  font-display: swap;
 }
+
 
 
 body {
   padding: 10px;
   margin: 10px;
   font-family:  "Intel";
+  font-weight: 400;
   background-color: #f9f9f8;
 }
 
@@ -182,7 +186,8 @@ body {
 }
 
 .producto-nombre {
-  font-family: "Intel Regular Bold";
+  font-family: "Intel";
+  font-weight: 700;
   text-decoration: none !important;
   text-align: left;
   margin: 8px 0 0 0;
