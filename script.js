@@ -1,3 +1,36 @@
+// Navbar dinámico
+const navbarHTML = `
+<nav class="navbar">
+  <div class="navbar-logo">
+    <a href="index.html">
+      <img src="/assets/images/logo.png" alt="Logo">
+    </a>
+  </div>
+
+  <div class="navbar-links">
+    <a href="/index.html">Eventos</a>
+    <a href="#">Search</a>
+    <a href="/pages/contact">Contacto</a>
+  </div>
+
+  <div class="navbar-cart">
+    <a href="#">Mis Entradas</a>
+    <a href="#"><i class="fas fa-user"></i> Ingresar</a>
+  </div>
+
+  <div class="navbar-toggle" onclick="toggleMenu()">☰</div>
+</nav>
+`;
+
+// Insertar al cargar
+document.addEventListener("DOMContentLoaded", () => {
+  const navbarContainer = document.getElementById("navbar-container");
+  if (navbarContainer) {
+    navbarContainer.innerHTML = navbarHTML;
+  }
+});
+
+
 // Loader
 const loadingDiv = document.createElement('div');
 loadingDiv.id = 'loading';
