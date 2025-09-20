@@ -3,7 +3,7 @@ const navbarHTML = `
 <nav class="navbar">
   <div class="navbar-logo">
     <a href="index.html">
-      <img src="/assets/images/logo.png" alt="Logo">
+      <img src="assets/images/logo.png" alt="Logo">
     </a>
   </div>
 
