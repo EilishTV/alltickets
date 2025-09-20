@@ -13,7 +13,7 @@ const navbarHTML = `
   <div class="navbar-links">
     <a href="${basePath}/index.html">Eventos</a>
     <a href="#">Search</a>
-    <a href="${basePath}/pages/contact/index.html">Contacto</a>
+    <a href="${basePath}/pages/contact/">Contacto</a>
   </div>
 
   <div class="navbar-cart">
@@ -24,6 +24,7 @@ const navbarHTML = `
   <div class="navbar-toggle" onclick="toggleMenu()">☰</div>
 </nav>
 `;
+
 
 // Insertar al cargar
 document.addEventListener("DOMContentLoaded", () => {
@@ -141,6 +142,4 @@ async function cargarEventos() {
   }
 }
 
-
 cargarEventos();
-
