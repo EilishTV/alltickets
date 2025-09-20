@@ -1,16 +1,19 @@
 // Navbar dinámico
+// Calculamos la base según la carpeta actual
+const basePath = window.location.pathname.includes("/pages/") ? "../.." : ".";
+
 const navbarHTML = `
 <nav class="navbar">
   <div class="navbar-logo">
-    <a href="index.html">
-      <img src="assets/images/logo.png" alt="Logo">
+    <a href="${basePath}/index.html">
+      <img src="${basePath}/assets/images/logo.png" alt="Logo">
     </a>
   </div>
 
   <div class="navbar-links">
-    <a href="/index.html">Eventos</a>
+    <a href="${basePath}/index.html">Eventos</a>
     <a href="#">Search</a>
-    <a href="pages/contact">Contacto</a>
+    <a href="${basePath}/pages/contact/index.html">Contacto</a>
   </div>
 
   <div class="navbar-cart">
@@ -140,3 +143,4 @@ async function cargarEventos() {
 
 
 cargarEventos();
+
