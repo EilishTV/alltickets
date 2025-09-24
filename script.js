@@ -1,10 +1,14 @@
 // -----------------------------
-// 📌 Detectar profundidad del sitio (para rutas relativas)
+// 📌 Detectar basePath correcto (Live Server y GitHub Pages)
 // -----------------------------
-let depth = window.location.pathname.split("/").length - 2; // restamos 2: dominio + repo
 let basePath = "";
-for (let i = 0; i < depth; i++) {
-  basePath += "../";
+
+// Si estamos en GitHub Pages
+if (window.location.hostname.includes("github.io")) {
+  let pathParts = window.location.pathname.split("/").filter(p => p !== "");
+  basePath = `/${pathParts[0]}/`; // /nombre-del-repo/
+} else {
+  basePath = "/"; // Local (Live Server)
 }
 
 // -----------------------------
@@ -13,15 +17,15 @@ for (let i = 0; i < depth; i++) {
 const navbarHTML = `
 <nav class="navbar">
   <div class="navbar-logo">
-    <a href="${basePath}">
+    <a href="${basePath}index.html">
       <img src="${basePath}assets/images/logo.png" alt="Logo">
     </a>
   </div>
 
   <div class="navbar-links">
-    <a href="${basePath}">Eventos</a>
+    <a href="${basePath}index.html">Eventos</a>
     <a href="#">Search</a>
-    <a href="${basePath}pages/contact/">Soporte</a>
+    <a href="${basePath}pages/contact/index.html">Soporte</a>
   </div>
 
   <div class="navbar-cart">
@@ -149,7 +153,8 @@ async function cargarEventos() {
   } catch (err) {
     console.error("Error cargando CSV:", err);
   } finally {
-    document.getElementById('loading').remove();
+    const loader = document.getElementById('loading');
+    if (loader) loader.remove();
   }
 }
 
