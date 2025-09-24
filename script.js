@@ -1,21 +1,25 @@
-// Calculamos la profundidad de la carpeta actual
+// -----------------------------
+// 📌 Detectar profundidad del sitio (para rutas relativas)
+// -----------------------------
 let depth = window.location.pathname.split("/").length - 2; // restamos 2: dominio + repo
 let basePath = "";
 for (let i = 0; i < depth; i++) {
   basePath += "../";
 }
 
-// Navbar dinámico
+// -----------------------------
+// 📌 Navbar dinámico
+// -----------------------------
 const navbarHTML = `
 <nav class="navbar">
   <div class="navbar-logo">
-    <a href="${basePath}index.html">
+    <a href="${basePath}">
       <img src="${basePath}assets/images/logo.png" alt="Logo">
     </a>
   </div>
 
   <div class="navbar-links">
-    <a href="${basePath}index.html">Eventos</a>
+    <a href="${basePath}">Eventos</a>
     <a href="#">Search</a>
     <a href="${basePath}pages/contact/">Soporte</a>
   </div>
@@ -29,7 +33,6 @@ const navbarHTML = `
 </nav>
 `;
 
-// Insertar al cargar
 document.addEventListener("DOMContentLoaded", () => {
   const navbarContainer = document.getElementById("navbar-container");
   if (navbarContainer) {
@@ -37,7 +40,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-// Loader
+// -----------------------------
+// 📌 Loader
+// -----------------------------
 const loadingDiv = document.createElement('div');
 loadingDiv.id = 'loading';
 loadingDiv.style.cssText = `
@@ -64,10 +69,11 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-// Crear sección de productos
+// -----------------------------
+// 📌 Crear sección de productos
+// -----------------------------
 function crearSeccionProductos(titulo, productos) {
   const containerGeneral = document.getElementById('productos-container');
-  if (!containerGeneral) return;
 
   const seccion = document.createElement('div');
   seccion.classList.add('productos-section');
@@ -118,7 +124,9 @@ function crearSeccionProductos(titulo, productos) {
   containerGeneral.appendChild(seccion);
 }
 
-// Cargar CSV
+// -----------------------------
+// 📌 Cargar eventos desde CSV
+// -----------------------------
 async function cargarEventos() {
   const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/1WZnQmVeQGM1JnSzF_6Cq3ZOHaJf70lJtfHnyZIjLpjI/export?format=csv";
   try {
@@ -141,9 +149,8 @@ async function cargarEventos() {
   } catch (err) {
     console.error("Error cargando CSV:", err);
   } finally {
-    const loader = document.getElementById('loading');
-    if (loader) loader.remove();
+    document.getElementById('loading').remove();
   }
 }
 
-document.addEventListener("DOMContentLoaded", cargarEventos);
+cargarEventos();
