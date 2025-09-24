@@ -1,83 +1,84 @@
 // -----------------------------
 // 📌 Detectar basePath correcto (Live Server y GitHub Pages)
 // -----------------------------
-let basePath = "";
+let basePath = "/";
 
 // Si estamos en GitHub Pages
 if (window.location.hostname.includes("github.io")) {
   let pathParts = window.location.pathname.split("/").filter(p => p !== "");
   basePath = `/${pathParts[0]}/`; // /nombre-del-repo/
-} else {
-  basePath = "/"; // Local (Live Server)
 }
 
 // -----------------------------
-// 📌 Navbar dinámico
+// 📌 Función para crear navbar
 // -----------------------------
-const navbarHTML = `
-<nav class="navbar">
-  <div class="navbar-logo">
-    <a href="${basePath}index.html">
-      <img src="${basePath}assets/images/logo.png" alt="Logo">
-    </a>
-  </div>
+function crearNavbar() {
+  const navbarHTML = `
+  <nav class="navbar">
+    <div class="navbar-logo">
+      <a href="${basePath}">
+        <img src="${basePath}assets/images/logo.png" alt="Logo">
+      </a>
+    </div>
 
-  <div class="navbar-links">
-    <a href="${basePath}index.html">Eventos</a>
-    <a href="#">Search</a>
-    <a href="${basePath}pages/contact/index.html">Soporte</a>
-  </div>
+    <div class="navbar-links">
+      <a href="${basePath}">Eventos</a>
+      <a href="#">Search</a>
+      <a href="${basePath}pages/contact/">Soporte</a>
+    </div>
 
-  <div class="navbar-cart">
-    <a href="#">Mis Entradas</a>
-    <a href="#"><i class="fas fa-user"></i> Ingresar</a>
-  </div>
+    <div class="navbar-cart">
+      <a href="#">Mis Entradas</a>
+      <a href="#"><i class="fas fa-user"></i> Ingresar</a>
+    </div>
 
-  <div class="navbar-toggle" onclick="toggleMenu()">☰</div>
-</nav>
-`;
+    <div class="navbar-toggle" onclick="toggleMenu()">☰</div>
+  </nav>
+  `;
 
-document.addEventListener("DOMContentLoaded", () => {
   const navbarContainer = document.getElementById("navbar-container");
   if (navbarContainer) {
     navbarContainer.innerHTML = navbarHTML;
   }
-});
+}
 
 // -----------------------------
 // 📌 Loader
 // -----------------------------
-const loadingDiv = document.createElement('div');
-loadingDiv.id = 'loading';
-loadingDiv.style.cssText = `
-  position: fixed; top:0; left:0;
-  width:100%; height:100%;
-  background-color:#f9f9f8;
-  display:flex; justify-content:center; align-items:center;
-  z-index:999;
-`;
-const spinner = document.createElement('div');
-spinner.style.cssText = `
-  border:6px solid #f3f3f3;
-  border-top:6px solid #6200EA;
-  border-radius:50%;
-  width:30px; height:30px;
-  animation:spin 1s linear infinite;
-`;
-loadingDiv.appendChild(spinner);
-document.body.appendChild(loadingDiv);
+function crearLoader() {
+  const loadingDiv = document.createElement('div');
+  loadingDiv.id = 'loading';
+  loadingDiv.style.cssText = `
+    position: fixed; top:0; left:0;
+    width:100%; height:100%;
+    background-color:#f9f9f8;
+    display:flex; justify-content:center; align-items:center;
+    z-index:999;
+  `;
+  const spinner = document.createElement('div');
+  spinner.style.cssText = `
+    border:6px solid #f3f3f3;
+    border-top:6px solid #6200EA;
+    border-radius:50%;
+    width:30px; height:30px;
+    animation:spin 1s linear infinite;
+  `;
+  loadingDiv.appendChild(spinner);
+  document.body.appendChild(loadingDiv);
 
-const style = document.createElement('style');
-style.textContent = `
-  @keyframes spin {0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
-`;
-document.head.appendChild(style);
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes spin {0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+  `;
+  document.head.appendChild(style);
+}
 
 // -----------------------------
 // 📌 Crear sección de productos
 // -----------------------------
 function crearSeccionProductos(titulo, productos) {
   const containerGeneral = document.getElementById('productos-container');
+  if (!containerGeneral) return;
 
   const seccion = document.createElement('div');
   seccion.classList.add('productos-section');
@@ -158,4 +159,11 @@ async function cargarEventos() {
   }
 }
 
-cargarEventos();
+// -----------------------------
+// 📌 Inicializar
+// -----------------------------
+document.addEventListener("DOMContentLoaded", () => {
+  crearNavbar();
+  crearLoader();
+  cargarEventos();
+});
