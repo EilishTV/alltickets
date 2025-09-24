@@ -1,19 +1,23 @@
-// Navbar dinámico
-// Calculamos la base según la carpeta actual
-const basePath = window.location.pathname.includes("/pages/") ? "../.." : ".";
+// Calculamos la profundidad de la carpeta actual
+let depth = window.location.pathname.split("/").length - 2; // restamos 2: dominio + repo
+let basePath = "";
+for (let i = 0; i < depth; i++) {
+  basePath += "../";
+}
 
+// Navbar dinámico
 const navbarHTML = `
 <nav class="navbar">
   <div class="navbar-logo">
-    <a href="${basePath}/index.html">
-      <img src="${basePath}/assets/images/logo.png" alt="Logo">
+    <a href="${basePath}index.html">
+      <img src="${basePath}assets/images/logo.png" alt="Logo">
     </a>
   </div>
 
   <div class="navbar-links">
-    <a href="${basePath}/index.html">Eventos</a>
+    <a href="${basePath}index.html">Eventos</a>
     <a href="#">Search</a>
-    <a href="${basePath}/pages/contact/">Contacto</a>
+    <a href="${basePath}pages/contact/">Soporte</a>
   </div>
 
   <div class="navbar-cart">

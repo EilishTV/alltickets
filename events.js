@@ -1,31 +1,9 @@
-const loadingDiv = document.createElement('div');
-loadingDiv.id = 'loading';
-loadingDiv.style.cssText = `
-  position: fixed; top:0; left:0;
-  width:100%; height:100%;
-  background-color:#f9f9f8;
-  display:flex; justify-content:center; align-items:center;
-  z-index:998;
-`;
-const spinner = document.createElement('div');
-spinner.style.cssText = `
-  border:6px solid #f3f3f3;
-  border-top:6px solid #6200EA;
-  border-radius:50%;
-  width:30px; height:30px;
-  animation:spin 1s linear infinite;
-`;
-loadingDiv.appendChild(spinner);
-document.body.appendChild(loadingDiv);
-
-const style = document.createElement('style');
-style.textContent = `
-@keyframes spin {0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
-`;
-document.head.appendChild(style);
-
 async function cargarEvento() {
   const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/1WZnQmVeQGM1JnSzF_6Cq3ZOHaJf70lJtfHnyZIjLpjI/export?format=csv";
+
+  // Usar el loader global ya creado en scripts.js
+  const loadingDiv = document.getElementById("loading");
+  if (loadingDiv) loadingDiv.style.display = "flex";
 
   try {
     const response = await fetch(SHEET_CSV_URL);
@@ -193,7 +171,7 @@ async function cargarEvento() {
   } catch (err) {
     console.error("Error cargando CSV:", err);
   } finally {
-    loadingDiv.style.display = "none";
+    if (loadingDiv) loadingDiv.style.display = "none";
   }
 }
 
