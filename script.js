@@ -29,7 +29,6 @@ const navbarHTML = `
 </nav>
 `;
 
-
 // Insertar al cargar
 document.addEventListener("DOMContentLoaded", () => {
   const navbarContainer = document.getElementById("navbar-container");
@@ -37,7 +36,6 @@ document.addEventListener("DOMContentLoaded", () => {
     navbarContainer.innerHTML = navbarHTML;
   }
 });
-
 
 // Loader
 const loadingDiv = document.createElement('div');
@@ -69,6 +67,7 @@ document.head.appendChild(style);
 // Crear sección de productos
 function crearSeccionProductos(titulo, productos) {
   const containerGeneral = document.getElementById('productos-container');
+  if (!containerGeneral) return;
 
   const seccion = document.createElement('div');
   seccion.classList.add('productos-section');
@@ -102,7 +101,7 @@ function crearSeccionProductos(titulo, productos) {
     const claseZoom = !agotado ? 'img-zoom' : '';
 
     productoDiv.innerHTML = `
-      <a href="events.html?id=${idEvento}" class="producto-link">
+      <a href="${basePath}pages/events/?id=${idEvento}" class="producto-link">
         <div class="imagen-contenedor">
           ${agotado ? '<div class="agotado-label">Sold Out</div>' : ''}
           <img src="${img}" alt="${nombre}" class="${claseZoom}">
@@ -142,8 +141,9 @@ async function cargarEventos() {
   } catch (err) {
     console.error("Error cargando CSV:", err);
   } finally {
-    document.getElementById('loading').remove();
+    const loader = document.getElementById('loading');
+    if (loader) loader.remove();
   }
 }
 
-cargarEventos();
+document.addEventListener("DOMContentLoaded", cargarEventos);
