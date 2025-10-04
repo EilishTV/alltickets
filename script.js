@@ -219,9 +219,12 @@ function crearFooter() {
 
   <footer>
     <div class="footer-container">
-      <div class="footer-logo">
-        <img src="${basePath}assets/images/logo-white.png" alt="Logo AllTickets">
-      </div>
+      <a href="${basePath}">
+        <div class="footer-logo">
+          <img src="${basePath}assets/images/logo-white.png" alt="Logo AllTickets">
+        </div>
+      </a>
+
 
       <div class="footer-links">
         <a href="${basePath}pages/contact/">Contacto y Soporte</a>
