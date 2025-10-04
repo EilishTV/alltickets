@@ -160,10 +160,93 @@ async function cargarEventos() {
 }
 
 // -----------------------------
+// 📌 Crear footer
+// -----------------------------
+function crearFooter() {
+  const footerHTML = `
+  <style>
+    footer {
+      background: #000000;
+      color: #fff;
+      padding: 40px 20px 20px 20px;
+      text-align: center;
+      position: relative;
+      margin-top: 60px;
+    }
+
+    .footer-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .footer-logo {
+      text-align: left;
+      margin-bottom: 20px;
+    }
+
+    .footer-logo img {
+      height: 50px;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: left;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin: 20px 0;
+      border-top: 1px solid #555;
+      padding-top: 20px;
+    }
+
+    .footer-links a {
+      color: #ccc;
+      text-decoration: none;
+      font-size: 14px;
+      transition: color 0.3s;
+    }
+
+    .footer-links a:hover {
+      color: #fff;
+    }
+
+    .footer-bottom {
+      text-align: left;
+      font-size: 13px;
+      color: #888;
+      margin-top: 30px;
+    }
+  </style>
+
+  <footer>
+    <div class="footer-container">
+      <div class="footer-logo">
+        <img src="${basePath}assets/images/logo-white.png" alt="Logo AllTickets">
+      </div>
+
+      <div class="footer-links">
+        <a href="${basePath}pages/contact/">Contacto y Soporte</a>
+        <a href="${basePath}pages/tyc/">Términos y Condiciones</a>
+        <a href="#">Privacidad</a>
+        <a href="#">Vende con nosotros</a>
+        <a href="#">Política de Cookies</a>
+      </div>
+
+      <div class="footer-bottom">
+        © 2025 crowder
+      </div>
+    </div>
+  </footer>
+  `;
+
+  document.body.insertAdjacentHTML("beforeend", footerHTML);
+}
+
+// -----------------------------
 // 📌 Inicializar
 // -----------------------------
 document.addEventListener("DOMContentLoaded", () => {
   crearNavbar();
   crearLoader();
   cargarEventos();
+  crearFooter();
 });
