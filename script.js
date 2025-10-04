@@ -202,11 +202,12 @@ function crearFooter() {
       color: #ccc;
       text-decoration: none;
       font-size: 14px;
-      transition: color 0.3s;
+      transition: color 0.3s, text-decoration 0.3s;
     }
 
     .footer-links a:hover {
       color: #fff;
+      text-decoration: underline; /* 🔹 Subrayado al pasar el mouse */
     }
 
     .footer-bottom {
