@@ -231,7 +231,7 @@ function crearFooter() {
         <a href="${basePath}pages/contact/">Contacto y Soporte</a>
         <a href="${basePath}pages/tyc/">Términos y Condiciones</a>
         <a href="#">Privacidad</a>
-        <a href="#">Vende con nosotros</a>
+        <a href="${basePath}pages/create">Vende con nosotros</a>
         <a href="#">Política de Cookies</a>
       </div>
 
