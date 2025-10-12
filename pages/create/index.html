@@ -14,6 +14,20 @@
   <title>Formulario Evento</title>
 
 <style>
+/* --- VARIABLES PARA PERSONALIZAR FÁCILMENTE --- */
+:root {
+  --input-height: 44px;       /* Altura de todos los inputs */
+  --input-padding: 10px;      /* Padding interno */
+  --button-size: 44px;        /* Tamaño del botón cuadrado */
+  --button-gap: 8px;          /* Espacio entre input y botón */
+  --border-radius: 6px;       /* Bordes redondeados */
+  --button-red: #cc0000;      /* Color del botón rojo */
+  --button-red-hover: #a00000;
+  --button-add: #000000;
+  --button-add-hover: #333;
+}
+
+/* --- ESTILO GENERAL --- */
 body {
   font-family: Arial, sans-serif;
   margin: 0;
@@ -29,6 +43,18 @@ header {
   padding: 70px;
   color: #fff;
   text-align: left;
+}
+
+fieldset {
+  border: none;             /* quita el borde feo */
+  padding: 0;               /* opcional: quita padding extra */
+  margin: 0 0 20px 0;       /* separa cada fieldset */
+}
+
+legend {
+  font-weight: bold;        /* resalta el título */
+  margin-bottom: 10px;      /* espacio debajo del legend */
+  font-size: 1.1rem;
 }
 
 h1 {
@@ -52,7 +78,7 @@ p {
   background: #fff4eb;
   border: 1px solid #f5cba7;
   padding: 16px;
-  border-radius: 6px;
+  border-radius: var(--border-radius);
   font-size: 0.95rem;
   margin: 20px auto;
   color: #7a4b2b;
@@ -69,65 +95,94 @@ label {
 
 input, textarea, select {
   width: 100%;
-  padding: 10px;
+  padding: var(--input-padding);
   border: 1px solid #ddd;
-  border-radius: 6px;
+  border-radius: var(--border-radius);
   font-size: 1rem;
   box-sizing: border-box;
-  background: #fff; /* Fondo blanco para todos los inputs */
-}
-
-input[type="file"] {
-  display: block;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 1rem;
-  box-sizing: border-box;
-  background: #fff; /* Fondo blanco igual que los demás */
-}
-
-input[type="date"] {
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 1rem;
-  box-sizing: border-box;
-  width: 100%;
-  background: #fff; /* Fondo blanco igual que los demás */
+  background: #fff;
+  height: var(--input-height); /* misma altura para todo */
 }
 
 textarea {
-  resize: vertical;
-  height: 120px;
-  background: #fff; /* Fondo blanco */
+  height: 120px; /* si querés que textarea sea más grande, lo personalizás aparte */
 }
 
+/* --- BOTONES GENERALES --- */
 button {
+  cursor: pointer;
+  border-radius: var(--border-radius);
+  font-weight: bold;
+  font-size: 1rem;
+  border: none;
+}
+
+/* --- BOTÓN ENVIAR --- */
+button[type="submit"] {
   margin-top: 15px;
   padding: 12px 20px;
   background: #000;
   color: #fff;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 1rem;
 }
 
-button:hover {
+button[type="submit"]:hover {
   background: #333;
 }
 
-fieldset {
-  border: none;
-  padding: 0;
-  margin-bottom: 20px;
+/* --- FECHAS MÚLTIPLES --- */
+#dates-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--button-gap);
 }
 
-legend {
-  font-weight: bold;
-  font-size: 1.3rem;
-  margin-bottom: 15px;
+.date-item {
+  display: flex;
+  gap: var(--button-gap);
+}
+
+.date-item input[type="date"] {
+  flex: 1;
+  height: var(--input-height); /* misma altura que los otros inputs */
+  padding: var(--input-padding);
+  box-sizing: border-box;
+}
+
+.date-item button.remove-date {
+  background: var(--button-red);
+  color: #fff;
+  width: var(--button-size);      /* cuadrado */
+  height: var(--button-size);     /* cuadrado */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.date-item button.remove-date:hover {
+  background: var(--button-red-hover);
+}
+
+/* --- BOTÓN AGREGAR FECHA --- */
+#add-date {
+  width: 100%;
+  margin-top: 8px;
+  padding: var(--input-padding);
+  background: var(--button-add);
+  color: #fff;
+  font-size: 1rem;
+}
+
+#add-date:hover {
+  background: var(--button-add-hover);
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 480px) {
+  input, textarea, select,
+  .date-item button.remove-date,
+  #add-date {
+    font-size: 1rem;
+  }
 }
 
 </style>
@@ -176,24 +231,48 @@ legend {
 
     <label>¿Cuándo? *</label>
 <div id="dates-container">
-  <input type="date" name="dates[]" required>
+  <!-- Primera fecha fija -->
+  <div class="date-item">
+    <input type="date" name="dates[]" required>
+  </div>
 </div>
 <button type="button" id="add-date">Agregar otra fecha</button>
 
 <script>
-  const container = document.getElementById('dates-container');
-  const btn = document.getElementById('add-date');
+const container = document.getElementById('dates-container');
+const addBtn = document.getElementById('add-date');
 
-  btn.addEventListener('click', () => {
-    const newInput = document.createElement('input');
-    newInput.type = 'date';
-    newInput.name = 'dates[]';
-    newInput.required = true;
-    newInput.style.display = 'block';
-    newInput.style.marginTop = '8px';
-    container.appendChild(newInput);
+// Función para crear un nuevo input de fecha con botón eliminar
+function createDateItem() {
+  const div = document.createElement('div');
+  div.className = 'date-item';
+
+  const input = document.createElement('input');
+  input.type = 'date';
+  input.name = 'dates[]';
+  input.required = true;
+
+  const removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  removeBtn.className = 'remove-date';
+  removeBtn.textContent = '-';
+
+  removeBtn.addEventListener('click', () => {
+    div.remove();
   });
+
+  div.appendChild(input);
+  div.appendChild(removeBtn);
+  return div;
+}
+
+// Evento del botón "Agregar otra fecha"
+addBtn.addEventListener('click', () => {
+  const newDateItem = createDateItem();
+  container.appendChild(newDateItem);
+});
 </script>
+
 
 
     <label for="price">Precio de las entradas</label>
