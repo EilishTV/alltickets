@@ -74,6 +74,10 @@ p {
   box-sizing: border-box;
 }
 
+legend {
+  text-decoration: underline;
+}
+
 .info-box {
   background: #fff4eb;
   border: 1px solid #f5cba7;
@@ -90,7 +94,7 @@ p {
 label {
   display: block;
   margin: 12px 0 6px;
-  font-weight: bold;
+  font-weight: 600;
 }
 
 input, textarea, select {
@@ -182,6 +186,24 @@ button[type="submit"]:hover {
   .date-item button.remove-date,
   #add-date {
     font-size: 1rem;
+  }
+}
+
+/* --- Corrige tamaño visual de inputs tipo date en móviles --- */
+input[type="date"] {
+  height: var(--input-height);
+  line-height: var(--input-height);
+  padding: 0 var(--input-padding);
+  font-size: 1rem;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+/* En iPhone y Android, esto evita que el control nativo sea más alto */
+@supports (-webkit-touch-callout: none) {
+  input[type="date"] {
+    min-height: var(--input-height);
   }
 }
 
