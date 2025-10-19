@@ -223,99 +223,114 @@ input[type="date"] {
       directamente por email: cómo funciona el proceso, herramientas para gestionar tus
       entradas y detalles sobre la venta de tu evento. Enviar más de una solicitud por este caso resultará en demoras en la respuesta.
     </div>
-<form>
-  <!-- Datos Personales -->
-  <fieldset>
-    <legend>Datos Personales:</legend>
+   <form id="eventForm">
+      <!-- Datos Personales -->
+      <fieldset>
+        <legend>Datos Personales:</legend>
+        <label for="fullname">Nombre y apellido</label>
+        <input type="text" id="fullname" name="fullname" required>
 
-    <label for="fullname">Nombre y apellido</label>
-    <input type="text" id="fullname" name="fullname" required>
+        <label for="dni">DNI</label>
+        <input type="text" id="dni" name="dni" required>
 
-    <label for="dni">DNI</label>
-    <input type="text" id="dni" name="dni" required>
+        <label for="phone">Teléfono (opcional)</label>
+        <input type="tel" id="phone" name="phone" placeholder="Ej: +54 9 11 23456789">
 
-    <label for="phone">Telefono (opcional)</label>
-    <input type="tel" id="phone" name="phone" placeholder="Ej: +54 9 11 23456789">
+        <label for="email">Correo electrónico</label>
+        <input type="email" id="email" name="email" required>
+      </fieldset>
 
-    <label for="email">Correo electrónico</label>
-    <input type="email" id="email" name="email" required>
-  </fieldset>
+      <!-- Datos del Evento -->
+      <fieldset>
+        <legend>Datos del Evento:</legend>
+        <label for="eventName">Nombre del evento</label>
+        <input type="text" id="eventName" name="eventName" required>
 
-  <!-- Datos del Evento -->
-  <fieldset>
-    <legend>Datos del Evento:</legend>
+        <label for="location">¿Dónde se llevará a cabo?</label>
+        <input type="text" id="location" name="location" required>
 
-    <label for="eventName">Nombre del evento</label>
-    <input type="text" id="eventName" name="eventName" required>
+        <label>¿Cuándo? *</label>
+        <div id="dates-container">
+          <div class="date-item">
+            <input type="date" name="dates[]" required>
+          </div>
+        </div>
+        <button type="button" id="add-date">Agregar otra fecha</button>
 
-    <label for="location">¿Dónde se llevará a cabo?</label>
-    <input type="text" id="location" name="location" required>
+        <label for="price">Precio de las entradas</label>
+        <input type="text" id="price" name="price" placeholder="Ej: Desde $12.000,00 / Hasta $103.000,00">
 
-    <label>¿Cuándo? *</label>
-<div id="dates-container">
-  <!-- Primera fecha fija -->
-  <div class="date-item">
-    <input type="date" name="dates[]" required>
+        <label for="capacity">Capacidad del lugar</label>
+        <input type="number" id="capacity" name="capacity">
+
+        <label for="message">Descripción</label>
+        <textarea id="message" name="message" required></textarea>
+
+        <label for="files">Archivos adjuntos (opcional)</label>
+        <input type="file" id="files" name="files" multiple>
+      </fieldset>
+
+      <button type="submit">Enviar</button>
+    </form>
   </div>
-</div>
-<button type="button" id="add-date">Agregar otra fecha</button>
 
-<script>
-const container = document.getElementById('dates-container');
-const addBtn = document.getElementById('add-date');
+  <script>
+    const form = document.getElementById('eventForm');
+    const addBtn = document.getElementById('add-date');
+    const container = document.getElementById('dates-container');
 
-// Función para crear un nuevo input de fecha con botón eliminar
-function createDateItem() {
-  const div = document.createElement('div');
-  div.className = 'date-item';
+    // Función para crear un nuevo input de fecha con botón eliminar
+    function createDateItem() {
+      const div = document.createElement('div');
+      div.className = 'date-item';
 
-  const input = document.createElement('input');
-  input.type = 'date';
-  input.name = 'dates[]';
-  input.required = true;
+      const input = document.createElement('input');
+      input.type = 'date';
+      input.name = 'dates[]';
+      input.required = true;
 
-  const removeBtn = document.createElement('button');
-  removeBtn.type = 'button';
-  removeBtn.className = 'remove-date';
-  removeBtn.textContent = '-';
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'remove-date';
+      removeBtn.textContent = '-';
 
-  removeBtn.addEventListener('click', () => {
-    div.remove();
-  });
+      removeBtn.addEventListener('click', () => {
+        div.remove();
+      });
 
-  div.appendChild(input);
-  div.appendChild(removeBtn);
-  return div;
-}
+      div.appendChild(input);
+      div.appendChild(removeBtn);
+      return div;
+    }
 
-// Evento del botón "Agregar otra fecha"
-addBtn.addEventListener('click', () => {
-  const newDateItem = createDateItem();
-  container.appendChild(newDateItem);
-});
-</script>
+    // Evento del botón "Agregar otra fecha"
+    addBtn.addEventListener('click', () => {
+      const newDateItem = createDateItem();
+      container.appendChild(newDateItem);
+    });
 
+    // Enviar el formulario a Google Sheets
+    form.addEventListener('submit', e => {
+      e.preventDefault();
 
+      const formData = new FormData(form);
+      fetch('https://script.google.com/macros/s/AKfycbwcy1ZsS1_IWIRBodnw6py4k1Grst4zgz91mNcJJ3vB4ZiH6T7z3v6rjIxn_HULk06x/exec', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.text())
+      .then(result => {
+        alert("¡Formulario enviado!");
+        form.reset();
+      })
+      .catch(error => {
+        alert("Error al enviar el formulario.");
+        console.error(error);
+      });
+    });
+  </script>
 
-    <label for="price">Precio de las entradas</label>
-    <input type="text" id="price" name="price" placeholder="Ej: Desde $12.000,00 / Hasta $103.000,00">
-
-    <label for="capacity">Capacidad del lugar</label>
-    <input type="number" id="capacity" name="capacity">
-
-    <label for="message">Descripción</label>
-    <textarea id="message" name="message" required></textarea>
-
-    <label for="files">Archivos adjuntos (opcional)</label>
-    <input type="file" id="files" name="files" multiple>
-
-  </fieldset>
-  </fieldset>
-
-  <button type="submit">Enviar</button>
-</form>
-
-
-  <script src="../../script.js"></script>
+    <script src="../../script.js"></script>
+    
 </body>
 </html>
