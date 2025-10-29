@@ -29,7 +29,7 @@ function crearNavbar() {
 
     <div class="navbar-cart">
       <a href="#">Mis Entradas</a>
-      <a href="../../login"><i class="fas fa-user"></i> Ingresar</a>
+      <a href="${basePath}login/"><i class="fas fa-user"></i> Ingresar</a>
     </div>
 
     <div class="navbar-toggle" onclick="toggleMenu()">☰</div>
