@@ -7,10 +7,26 @@ import {
   signInWithPopup,
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import {
+  doc,
+  setDoc,
+  getDoc
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // -----------------------------
-// 📌 Función para ordenar los datos del usuario
+// 📌 BasePath (GitHub Pages / local)
+// -----------------------------
+function getBasePath() {
+  let basePath = "/";
+  if (location.hostname.includes("github.io")) {
+    const parts = location.pathname.split("/").filter(Boolean);
+    basePath = "/" + parts[0] + "/";
+  }
+  return basePath;
+}
+
+// -----------------------------
+// 📌 Obtener datos ordenados del usuario
 // -----------------------------
 async function getUserDataOrdered(uid) {
   const docRef = doc(db, "users", uid);
@@ -26,7 +42,9 @@ async function getUserDataOrdered(uid) {
     idNumber: data.idNumber,
     country: data.country,
     gender: data.gender,
-    createdAt: data.createdAt.toDate ? data.createdAt.toDate() : data.createdAt
+    createdAt: data.createdAt?.toDate
+      ? data.createdAt.toDate()
+      : data.createdAt
   };
 }
 
@@ -37,16 +55,21 @@ const userContainer = document.getElementById("user-container");
 
 async function mostrarUsuario() {
   const user = auth.currentUser;
-  if (user && userContainer) {
-    const userData = await getUserDataOrdered(user.uid);
-    if (userData) {
-      userContainer.innerHTML = `${userData.firstName} <a href="#" id="logout">Salir</a>`;
-      document.getElementById("logout").addEventListener("click", async () => {
-        await auth.signOut();
-        location.reload();
-      });
-    }
-  }
+  if (!user || !userContainer) return;
+
+  const userData = await getUserDataOrdered(user.uid);
+  if (!userData) return;
+
+  userContainer.innerHTML = `
+    ${userData.firstName}
+    <a href="#" id="logout">Salir</a>
+  `;
+
+  document.getElementById("logout").addEventListener("click", async (e) => {
+    e.preventDefault();
+    await auth.signOut();
+    location.reload();
+  });
 }
 
 // -----------------------------
@@ -70,17 +93,20 @@ if (signupForm) {
     const gender = signupForm.querySelector("#gender").value;
 
     if (!email || !password || !confirm || !firstName || !lastName) {
-      return alert("Completá todos los campos obligatorios");
+      alert("Completá todos los campos obligatorios");
+      return;
     }
     if (password !== confirm) {
-      return alert("Las contraseñas no coinciden");
+      alert("Las contraseñas no coinciden");
+      return;
     }
 
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential =
+        await createUserWithEmailAndPassword(auth, email, password);
+
       const uid = userCredential.user.uid;
 
-      // Guardar datos en Firestore en el orden que querés
       await setDoc(doc(db, "users", uid), {
         email,
         firstName,
@@ -94,11 +120,11 @@ if (signupForm) {
         createdAt: new Date()
       });
 
-      alert("Cuenta creada correctamente!");
-      window.location.href = "../login/";
+      alert("Cuenta creada correctamente");
+      window.location.replace(getBasePath() + "login/");
 
     } catch (error) {
-      console.error("Error en signup:", error);
+      console.error("Error signup:", error);
       alert("Error creando usuario: " + error.message);
     }
   });
@@ -116,12 +142,12 @@ if (loginForm) {
     const password = loginForm.querySelector("#loginPassword").value.trim();
 
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      await signInWithEmailAndPassword(auth, email, password);
       await mostrarUsuario();
-      window.location.href = "/index.html"; // Redirigir a home
+      window.location.replace(getBasePath());
     } catch (error) {
       console.error("Error login:", error);
-      alert("Usuario o contraseña incorrectos.");
+      alert("Usuario o contraseña incorrectos");
     }
   });
 }
@@ -133,12 +159,14 @@ const googleBtn = document.querySelector("#googleBtn");
 if (googleBtn) {
   googleBtn.addEventListener("click", async () => {
     const provider = new GoogleAuthProvider();
+
     try {
       const userCredential = await signInWithPopup(auth, provider);
       const user = userCredential.user;
 
       const docRef = doc(db, "users", user.uid);
       const docSnap = await getDoc(docRef);
+
       if (!docSnap.exists()) {
         await setDoc(docRef, {
           email: user.email,
@@ -155,17 +183,17 @@ if (googleBtn) {
       }
 
       await mostrarUsuario();
-      window.location.href = "/";
+      window.location.replace(getBasePath());
 
     } catch (error) {
       console.error("Error Google login:", error);
-      alert("Error iniciando sesión con Google.");
+      alert("Error iniciando sesión con Google");
     }
   });
 }
 
 // -----------------------------
-// 📌 Detectar usuario logueado
+// 📌 Detectar sesión activa
 // -----------------------------
 onAuthStateChanged(auth, (user) => {
   if (user) mostrarUsuario();
