@@ -118,7 +118,7 @@ if (loginForm) {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       await mostrarUsuario();
-      window.location.href = "/"; // Redirigir a home
+      window.location.href = "/index.html"; // Redirigir a home
     } catch (error) {
       console.error("Error login:", error);
       alert("Usuario o contraseña incorrectos.");
