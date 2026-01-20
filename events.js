@@ -1,7 +1,6 @@
 async function cargarEvento() {
   const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/1WZnQmVeQGM1JnSzF_6Cq3ZOHaJf70lJtfHnyZIjLpjI/export?format=csv";
 
-  // Usar el loader global ya creado en scripts.js
   const loadingDiv = document.getElementById("loading");
   if (loadingDiv) loadingDiv.style.display = "flex";
 
@@ -13,8 +12,8 @@ async function cargarEvento() {
 
     const params = new URLSearchParams(window.location.search);
     const eventoId = params.get("id");
-    const evento = eventos.find(e =>
-      e.nombre.toLowerCase().replaceAll(" ", "-") === eventoId
+    const evento = eventos.find(
+      e => e.nombre.toLowerCase().replaceAll(" ", "-") === eventoId
     );
 
     const contenedorEvento = document.getElementById("evento");
@@ -23,27 +22,26 @@ async function cargarEvento() {
     const card = document.querySelector(".event-card");
     const botonComprar = document.querySelector(".event-button");
 
-    // Crear selects dinámicos
     const selectSectores = document.createElement("select");
     selectSectores.classList.add("event-sector");
+
     const selectTarifas = document.createElement("select");
     selectTarifas.classList.add("event-tarifa");
+
     const selectCantidad = document.createElement("select");
     selectCantidad.classList.add("event-cantidad");
+
     card.insertBefore(selectSectores, botonComprar);
     card.insertBefore(selectTarifas, botonComprar);
     card.insertBefore(selectCantidad, botonComprar);
 
     if (!evento) {
       contenedorEvento.innerHTML = `
-        <h3 style="margin-top:6.5rem; color:#6200EA; font-weight:normal;">
+        <h3 style="margin-top:6.5rem; color:#6200EA;">
           ¡No pudimos encontrar el evento!
         </h3>
-        <p style="margin-top:1rem; color:#333;">
-          Posiblemente este ya finalizó o nunca existió.
-        </p>
       `;
-      if (card) card.style.display = "none";
+      card.style.display = "none";
       return;
     }
 
@@ -51,7 +49,26 @@ async function cargarEvento() {
     imagen.src = evento.img;
     if (evento.estado) contenedorEvento.querySelector("#estado").textContent = evento.estado;
 
-    // Fechas
+    /* ========= DOC (SOLO TEXTO) ========= */
+    if (evento.doc_id) {
+      cargarGoogleDoc(evento.doc_id);
+    }
+
+    /* ========= MAPA DESDE SHEETS ========= */
+    if (evento.mapa_img) {
+      const mapContainer = document.querySelector(".event-doc-map");
+      if (mapContainer) {
+        mapContainer.innerHTML = `
+          <img 
+            src="${evento.mapa_img}" 
+            alt="Mapa del evento"
+            style="width:100%; height:auto;"
+          >
+        `;
+      }
+    }
+
+    /* ========= FECHAS ========= */
     if (evento.fechas) {
       selectFechas.innerHTML = "";
       evento.fechas.split(";").forEach(fecha => {
@@ -61,111 +78,51 @@ async function cargarEvento() {
       });
     }
 
-    // Sectores y tarifas
+    /* ========= SECTORES / TARIFAS ========= */
     const sectores = evento.sectores ? evento.sectores.split(";") : [];
     const tarifas = evento.tarifas ? evento.tarifas.split(";") : [];
-    const cantidades = evento.cantidad ? evento.cantidad.split(";") : [];
 
     function actualizarTarifaCantidad() {
       selectTarifas.innerHTML = "";
       selectCantidad.innerHTML = "";
+
       const index = selectSectores.selectedIndex;
       if (index >= 0) {
         const tarifa = tarifas[index] || "0";
 
-        const optionTarifa = document.createElement("option");
-        optionTarifa.value = tarifa;
-        optionTarifa.textContent = `$${tarifa}`;
-        selectTarifas.appendChild(optionTarifa);
+        selectTarifas.innerHTML = `<option>$${tarifa}</option>`;
 
-        // Cantidad fija hasta 4
         for (let i = 1; i <= 4; i++) {
-          const optionCantidad = document.createElement("option");
-          optionCantidad.value = i;
-          optionCantidad.textContent = i;
-          selectCantidad.appendChild(optionCantidad);
+          selectCantidad.innerHTML += `<option>${i}</option>`;
         }
       }
     }
 
     selectSectores.innerHTML = "";
     sectores.forEach(sec => {
-      const option = document.createElement("option");
-      option.textContent = sec;
-      selectSectores.appendChild(option);
+      selectSectores.innerHTML += `<option>${sec}</option>`;
     });
+
     selectSectores.addEventListener("change", actualizarTarifaCantidad);
-    if (sectores.length > 0) {
-      selectSectores.selectedIndex = 0;
-      actualizarTarifaCantidad();
-    }
+    if (sectores.length) actualizarTarifaCantidad();
 
-    // Verificar si el evento está agotado
-    if (evento.agotado && evento.agotado.toUpperCase() === "TRUE") {
-      // Ocultar selects y botón
-      selectSectores.style.display = "none";
-      selectTarifas.style.display = "none";
-      selectCantidad.style.display = "none";
-      selectFechas.style.display = "none";
-      botonComprar.style.display = "none";
+    /* ========= AGOTADO ========= */
+    if (evento.agotado?.toUpperCase() === "TRUE") {
+      [selectSectores, selectTarifas, selectCantidad, selectFechas, botonComprar]
+        .forEach(el => el.style.display = "none");
 
-      // Crear div AGOTADO
-      const divAgotado = document.createElement("div");                                                                 
+      const divAgotado = document.createElement("div");
       divAgotado.textContent = "AGOTADO";
-      divAgotado.style.width = "100%";
-      divAgotado.style.padding = "1rem";
-      divAgotado.style.textAlign = "center";
-      divAgotado.style.fontWeight = "bold";
-      divAgotado.style.backgroundColor = "#6200EA";
-      divAgotado.style.color = "#fff";
-      divAgotado.style.border = "1px solid #CCCCCC";
-      divAgotado.style.boxSizing = "border-box";
-      divAgotado.style.display = "block";
-      divAgotado.style.margin = "0 0 1rem 0";
-
-      // Insertar AGOTADO al inicio del card
+      divAgotado.style.cssText = `
+        width:100%;
+        padding:1rem;
+        text-align:center;
+        font-weight:bold;
+        background:#6200EA;
+        color:#fff;
+        margin-bottom:1rem;
+      `;
       card.insertBefore(divAgotado, card.firstChild);
-    } else {
-      // Entradas (solo si no está agotado)
-      let entradas = [];
-      try {
-        entradas = JSON.parse(evento.entradas || "[]");
-        const selectEntradas = document.querySelector(".entrada-tipos");
-        selectEntradas.innerHTML = "";
-        entradas.forEach((entrada, i) => {
-          const option = document.createElement("option");
-          option.value = i;
-          option.textContent = `${entrada.nombre} - $${entrada.precio}`;
-          if (entrada.agotado) {
-            option.textContent += " (Agotado)";
-            option.disabled = true;
-          }
-          selectEntradas.appendChild(option);
-        });
-
-        selectEntradas.addEventListener("change", () => {
-          const entradaSel = entradas[selectEntradas.value];
-          if (!entradaSel || entradaSel.agotado) {
-            botonComprar.textContent = "Agotado";
-            botonComprar.href = "#";
-            botonComprar.classList.add("agotado");
-            botonComprar.style.pointerEvents = "none";
-            return;
-          }
-          botonComprar.textContent = "Comprar";
-          botonComprar.href = entradaSel.linkPago;
-          botonComprar.target = "_blank";
-          botonComprar.classList.remove("agotado");
-          botonComprar.style.pointerEvents = "auto";
-        });
-
-        if (entradas.length > 0) {
-          selectEntradas.selectedIndex = 0;
-          selectEntradas.dispatchEvent(new Event("change"));
-        }
-      } catch (err) {
-        console.error("Error parseando entradas:", err);
-      }
     }
 
   } catch (err) {
@@ -173,6 +130,21 @@ async function cargarEvento() {
   } finally {
     if (loadingDiv) loadingDiv.style.display = "none";
   }
+}
+
+/* ========= GOOGLE DOC (SOLO TEXTO) ========= */
+function cargarGoogleDoc(docId) {
+  const textContainer = document.querySelector(".event-doc-text");
+  if (!textContainer) return;
+
+  const iframe = document.createElement("iframe");
+  iframe.src = `https://docs.google.com/document/d/e/${docId}/pub?embedded=true`;
+  iframe.style.width = "100%";
+  iframe.style.minHeight = "1100px";
+  iframe.style.border = "none";
+
+  textContainer.innerHTML = "";
+  textContainer.appendChild(iframe);
 }
 
 cargarEvento();

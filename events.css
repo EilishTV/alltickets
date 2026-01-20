@@ -1,38 +1,40 @@
-/* ========================= */
-/* GLOBAL                     */
-/* ========================= */
-body {
+/* =========================
+   GLOBAL
+========================= */
+html, body {
+  margin: 0;
   font-family: Helvetica, sans-serif;
   background-color: #f9f9f8;
-  margin: 0%;
+  overflow-x: hidden; /* evita scroll horizontal */
 }
 
-/* ========================= */
-/* NAVBAR                     */
-/* ========================= */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* =========================
+   NAVBAR
+========================= */
 .navbar {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  margin: -15px;
   padding: 15px 32px;
   background-color: rgba(249, 249, 248, 0.7);
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(10px);
-  color: black;
   display: flex;
   align-items: center;
   justify-content: space-between;
   font-size: 0.9rem;
   z-index: 999;
-  transform: translateY(8px);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(0,0,0,0.1);
 }
 
 .navbar-logo img {
-  width: 8.0rem;
-  margin-top: 10px;
+  width: 8rem;
   height: auto;
 }
 
@@ -44,35 +46,15 @@ body {
   gap: 24px;
 }
 
-.navbar-links a {
-  text-decoration: none;
-  color: black;
-  transition: color 0.3s;
-}
-
-.navbar-links a:hover {
+.navbar-links a:hover,
+.navbar-cart a:hover {
   color: #555;
-}
-
-.navbar-links a i {
-  margin-left: 4px;
-  font-size: 0.8rem;
 }
 
 .navbar-cart {
   margin-left: auto;
   display: flex;
   gap: 16px;
-}
-
-.navbar-cart a {
-  text-decoration: none;
-  color: black;
-  transition: color 0.3s;
-}
-
-.navbar-cart a:hover {
-  color: #555;
 }
 
 /* Botón hamburguesa */
@@ -88,75 +70,64 @@ body {
     display: none;
     position: absolute;
     top: 100%;
-    right: -4.0rem;
-    left: auto;
+    right: 0;
     background: #f9f9f8;
     flex-direction: column;
     align-items: flex-start;
     gap: 16px;
     padding: 16px 32px;
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    border-top: 1px solid rgba(0,0,0,0.1);
     z-index: 998;
   }
-
   .navbar-links.show {
     display: flex;
   }
-
-  .navbar-links a {
-    color: #000;
-  }
-
   .navbar-toggle {
     display: block;
-    font-size: 1.5rem;
-    cursor: pointer;
-    padding: 9px;
   }
 }
 
-/* ========================= */
-/* CONTENIDO DEL EVENTO       */
-/* ========================= */
+/* =========================
+   EVENTO – IMAGEN PRINCIPAL
+========================= */
 .evento-contenedor {
-  margin: 0 auto;
   text-align: center;
   color: black;
 }
 
-.evento-contenedor img {
+.evento-contenedor > img {
   width: 100%;
-  aspect-ratio: 1920 / 720;
+  aspect-ratio: 1920/720;
   object-fit: cover;
   display: block;
   margin: 3.7rem auto 0 auto;
 }
 
+/* =========================
+   ESTADO
+========================= */
 #estado {
   font-size: 20px;
   font-weight: bold;
 }
 
-/* ========================= */
-/* CARD DE SELECTS           */
-/* ========================= */
+/* =========================
+   CARD DE SELECTS
+========================= */
 .event-card {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 0; 
+  gap: 0;
   margin-top: -20px;
   padding: 10px;
   border: 1px solid #ccc;
   background-color: #fff;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
   max-width: 100%;
   box-sizing: border-box;
 }
 
-/* ========================= */
-/* SELECTS UNIFICADOS        */
-/* ========================= */
 .event-card select,
 .event-dates {
   flex: 1;
@@ -178,16 +149,14 @@ body {
 .event-card select:focus,
 .event-dates:focus {
   border-color: #6200ea;
-  box-shadow: 0 0 4px rgba(98, 0, 234, 0.3);
+  box-shadow: 0 0 4px rgba(98,0,234,0.3);
   outline: none;
 }
 
-/* Botón comprar */
 .event-card .event-button {
   padding: 12px 24px;
   background-color: #6200ea;
   color: #fff;
-  text-decoration: none;
   transition: background-color 0.3s;
   flex-shrink: 0;
 }
@@ -196,26 +165,62 @@ body {
   background-color: #4500b5;
 }
 
-/* ========================= */
-/* RESPONSIVE                 */
-/* ========================= */
+/* RESPONSIVE CARD */
 @media (max-width: 768px) {
   .event-card {
-    flex-direction: column; 
+    flex-direction: column;
     align-items: stretch;
     gap: 12px;
     text-align: center;
   }
-
   .event-card select,
   .event-card .event-button {
-    flex: none;
     width: 100%;
-    box-sizing: border-box;
-    margin: 0;
   }
+}
 
-  .event-card .event-button {
-    flex-shrink: 1;
+/* =========================
+   LAYOUT DOC + MAPA
+========================= */
+.event-info-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* texto y mapa lado a lado */
+  gap: 32px;
+  max-width: 1200px;
+  margin: 40px auto;
+  align-items: start;
+  box-sizing: border-box;
+}
+
+.event-doc-text {
+  width: 100%;
+}
+
+.event-doc-text iframe {
+  width: 100%;
+  min-height: 1100px;
+  border: none;
+  display: block;
+}
+
+.event-doc-map {
+  width: 100%; /* ocupa toda su columna */
+}
+
+.event-doc-map img {
+  width: 100%; /* se ajusta al 100% de la columna */
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+  .event-info-split {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .event-doc-map {
+    margin-top: 24px;
   }
 }

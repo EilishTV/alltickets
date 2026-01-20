@@ -3,136 +3,129 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Terminos y Condiciones</title>
+  <title>Términos y Condiciones</title>
   <link rel="stylesheet" href="../../assets/css/style.css">
 
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background: #f9f9f9;
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f9f9f9;
+    }
 
-  }
+    header {
+      margin-top: 4.9rem;
+      background: #000;
+      padding: 70px;
+      color: #fff;
+      text-align: left;
+    }
 
-  header {
-    margin-top: 4.9rem;
-    background: #000;
-    padding: 70px;
-    color: #fff;
-    text-align: left;
-  }
+    h1 {
+      margin: 0;
+      font-size: 1.9rem;
+      font-weight: 500; /* Menos bold */
+    }
 
-  h1 {
-    margin: 0;
-    font-size: 1.9rem;
-  }
+    p {
+      margin: 0;
+      font-size: 1.3rem;
+    }
 
-  p {
-    margin: 0;
-    font-size: 1.3rem;
-  }
+    .terms-content {
+      font-size: 0.95rem;
+      width: 80%;
+      box-sizing: border-box;
+      padding: 60px;
+      background: white;
+      margin: 40px auto;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
 
-  /* 🔽 Agregado para achicar el texto del contenedor */
-  .terms-content {
-    font-size: 0.95rem;
-  }
+    .terms-content h2,
+    .terms-content h3,
+    .terms-content h4 {
+      margin-top: 50px; /* Más espacio antes de cada sección */
+      margin-bottom: 1.5rem; /* Espacio después del título */
+      font-size: 1rem;
+      font-weight: 600; /* Menos bold */
+      text-transform: uppercase;
+    }
 
-  .terms-content {
-  width: 90%;
-  box-sizing: border-box;
-}
+    .terms-content p, .terms-content li {
+      text-align: justify;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 1rem; /* Más espacio entre párrafos */
+    }
 
+    .terms-content a {
+      color: #0066cc;
+      text-decoration: none;
+    }
 
-  .terms-content h2 {
-    margin-top: 40px;
-    font-size: 1rem;
-    text-transform: uppercase;
-  }
+    .terms-content a:hover {
+      text-decoration: underline;
+    }
 
-  .terms-content p {
-    text-align: justify;
-    font-size: 0.95rem;
-  }
-  .terms-content li {
-    font-size: 0.95rem;
-    line-height: 1.5;
-  }
-</style>
+    /* Reset de márgenes/paddings del Docs */
+    .terms-content * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
+    .terms-content p,
+    .terms-content h1,
+    .terms-content h2,
+    .terms-content h3,
+    .terms-content h4,
+    .terms-content li {
+      margin-bottom: 1.8em; /* Controla espacio entre párrafos y temas */
+    }
+  </style>
 </head>
 <body>
 
   <div id="navbar-container"></div>
 
   <header>
-    <h1>Terminos y Condiciones:</h1>
-    <p>Terminos legales para el uso de nuestro servicio.</p>
+    <h1>Términos y Condiciones:</h1>
+    <p>Términos legales para el uso de nuestro servicio.</p>
   </header>
 
-<!-- ... Todo tu código anterior se mantiene igual ... -->
+  <div class="terms-content" id="terms-container">
+    <!-- Aquí se cargará automáticamente el contenido de Google Docs -->
+    <p>Cargando contenido...</p>
+  </div>
 
-<!-- 🔽 Estilos inline solo para este contenedor -->
-<div class="terms-content" style="padding: 40px; background: white; margin: 40px auto; width: 85%; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+  <script>
+    // URL de tu Google Docs publicado
+    const docUrl = 'https://docs.google.com/document/d/e/2PACX-1vS2EL7Ci-RNuPUdUiqWeNJv-wddcgSyYbLreVX1qH4yHQZu5CYrCVHzZYNk7Ics2Z7u68XS8-56W_oh/pub?rand=' + new Date().getTime();
 
-  <h2>Alcance del Servicio</h2>
-  <p>AllTickets ofrece a los usuarios la posibilidad de comprar entradas para eventos de entretenimiento, deportivos, culturales, entre otros, exclusivamente en Argentina. Todas las operaciones se realizan en pesos argentinos.</p>
 
-  <h2>Registro de Usuario</h2>
-  <p>Para realizar compras en AllTickets es obligatorio crear una cuenta. El usuario se compromete a proporcionar información veraz, completa y actualizada, y a mantener la confidencialidad de sus credenciales de acceso.</p>
-  <p>AllTickets no se responsabiliza por el uso no autorizado de las cuentas de usuario.</p>
+    fetch(docUrl)
+      .then(response => response.text())
+      .then(data => {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(data, 'text/html');
 
-  <h2>Pagos</h2>
-  <p>Todas las compras de entradas deben realizarse a través de los métodos de pago habilitados en la plataforma. Al confirmar una compra, el usuario autoriza a AllTickets a procesar el cobro correspondiente.</p>
-  <p>Los precios pueden incluir cargos por servicio y/o costos adicionales según el evento.</p>
+        // Extraemos solo párrafos, encabezados y listas
+        const content = Array.from(doc.querySelectorAll('p, h1, h2, h3, h4, li'))
+          .map(el => el.outerHTML)
+          .join('');
 
-  <h2>Política de Reembolsos</h2>
-  <p>Las compras realizadas en AllTickets <strong>solo podrán ser reembolsadas dentro de las 72 horas posteriores a la confirmación del pago</strong>.</p>
-  <p>Una vez pasado ese período, no se aceptarán solicitudes de cancelación o devolución, salvo que el evento sea cancelado o reprogramado por el organizador, en cuyo caso se informarán las opciones disponibles.</p>
-
-  <h2>Uso del Sitio</h2>
-  <p>El usuario se compromete a utilizar el sitio y sus servicios conforme a la ley, la moral, el orden público y estos Términos y Condiciones. Queda prohibido:</p>
-  <ul>
-    <li>Manipular el sistema para obtener ventajas indebidas.</li>
-    <li>Revender entradas adquiridas por medios no autorizados.</li>
-    <li>Realizar actividades fraudulentas o que vulneren derechos de terceros.</li>
-    <li>Utilizar bots o automatizaciones para la compra de entradas.</li>
-    <li>Crear múltiples cuentas con el fin de evadir controles.</li>
-  </ul>
-  <p>AllTickets se reserva el derecho de suspender o cancelar cuentas que incumplan estas disposiciones.</p>
-
-  <h2>Limitación de Responsabilidad</h2>
-  <p>AllTickets actúa como intermediario en la venta de entradas y no es responsable por la organización, cambios o calidad de los eventos. La disponibilidad, acceso y duración de los eventos es responsabilidad del organizador.</p>
-
-  <h2>Modificaciones</h2>
-  <p>AllTickets se reserva el derecho de modificar en cualquier momento estos Términos y Condiciones. Los cambios entrarán en vigencia una vez publicados en el sitio. Es responsabilidad del usuario revisar periódicamente esta sección.</p>
-
-  <h2>Jurisdicción y Ley Aplicable</h2>
-  <p>Estos Términos y Condiciones se rigen por las leyes de la República Argentina. Cualquier controversia será sometida a la jurisdicción de los tribunales ordinarios de la Ciudad Autónoma de Buenos Aires.</p>
-
-  <h2>Entrega de Entradas Digitales</h2>
-  <p>Todas las entradas adquiridas en AllTickets son digitales y se envían al correo electrónico registrado por el usuario al momento de la compra. 
-  Es responsabilidad del usuario asegurarse de que el correo electrónico proporcionado sea correcto y esté activo.</p>
-  <p>En caso de no recibir el correo electrónico con la entrada, el usuario deberá revisar la carpeta de “Spam” o “Correo no deseado”. 
-  Si aún así no la encuentra, podrá comunicarse con nuestro equipo de soporte para solicitar el reenvío.</p>
-  <p>EL CLIENTE PODRÁ ADQUIRIR HASTA CUATRO (4) ENTRADAS POR EVENTO, salvo que el Organizador disponga un límite distinto. EN CASO DE SUPERAR DICHO MÁXIMO, LA COMPRA PODRÁ SER ANULADA Y SE REINTEGRARÁ EL IMPORTE ABONADO, SIN DERECHO A COMPENSACIÓN ADICIONAL.</p>
-  <h2>Soporte y Atención al Cliente</h2>
-  <p>AllTickets pone a disposición de los usuarios un canal de soporte para resolver consultas, reclamos o problemas relacionados con el servicio. 
-  El usuario podrá enviar una solicitud ingresando en la sección 
-  <a href="../../pages/contact">Soporte</a>.</p>
-  <p>El equipo de atención al cliente responderá en el menor tiempo posible, pero los plazos pueden variar según la demanda y complejidad del caso.</p>
-
-  <h2>Privacidad y Datos Personales</h2>
-  <p>AllTickets recopila y procesa los datos personales de los usuarios conforme a la legislación vigente en materia de protección de datos. 
-  La información proporcionada se utiliza únicamente para gestionar compras, enviar entradas digitales y mejorar la experiencia en la plataforma.</p>
-  <p>En ningún caso los datos serán cedidos a terceros sin autorización del usuario, salvo obligación legal o requerimiento de autoridades competentes.</p>
-
-  <h2>Fuerza Mayor</h2>
-  <p>AllTickets no será responsable por incumplimientos derivados de causas de fuerza mayor o hechos fuera de su control, incluyendo pero no limitándose a: fallas técnicas, cortes de energía, huelgas, pandemias, catástrofes naturales, conflictos sociales o cualquier otra circunstancia que impida el normal funcionamiento de la plataforma.</p>
-
-</div>
-
+        document.getElementById('terms-container').innerHTML = content;
+      })
+      .catch(err => {
+        console.error('Error al cargar el documento:', err);
+        document.getElementById('terms-container').innerHTML = '<p>No se pudo cargar el contenido. Intenta nuevamente más tarde.</p>';
+      });
+  </script>
 
   <script src="../../script.js"></script>
+  <script src="../../js/navbar-footer.js"></script>
 </body>
 </html>

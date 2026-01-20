@@ -1,0 +1,108 @@
+/* Reset básico */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f9f9f9;
+  justify-content: center;
+  align-items: stretch; /* importante para que el footer ocupe todo el ancho */
+}
+
+.signup-container {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 40px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.signup-container img {
+  width: 180px;
+  margin-bottom: 20px;
+}
+
+.signup-container h1 {
+  font-size: 22px;
+  margin-bottom: 15px;
+  color: #111;
+  font-weight: 500;
+}
+
+.signup-container form {
+  text-align: left;
+}
+
+.signup-container label {
+  display: block;
+  margin-top: 15px;
+  font-size: 13px;
+  color: #555;
+}
+
+.signup-container input,
+.signup-container select {
+  width: 100%;
+  padding: 10px 12px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  appearance: none;
+}
+
+.signup-container select {
+  padding-right: 30px;
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2210%22%20height%3D%227%22%20viewBox%3D%220%200%2010%207%22%20fill%3D%22none%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M1%201L5%206L9%201%22%20stroke%3D%22%23555%22%20stroke-width%3D%222%22/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 10px 7px;
+}
+
+.signup-container button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 25px;
+  background-color: #111;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.signup-container button:hover {
+  background-color: #333;
+}
+
+.form-row {
+  display: flex;
+  gap: 10px;
+}
+
+.form-row .form-group {
+  flex: 1;
+}
+
+.signin-footer {
+  width: 100%;
+  text-align: center;
+  font-size: 13px;
+  color: #555;
+  margin-top: 20px;
+  padding: 10px 0;
+}
+
+.signin-footer a {
+  color: #741eff;
+  text-decoration: underline;
+  margin-left: 5px;
+}

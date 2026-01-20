@@ -1,49 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AllTickets - Argentina</title>
-    <link rel="stylesheet" href="assets/css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AllTickets - Argentina</title>
 
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 </head>
+
 <body>
 
-    <div id="navbar-container"></div>
-    <div id="slider"></div>
+  <div id="navbar-container"></div>
+  <div id="slider"></div>
+  <div id="productos-container"></div>
+  <div id="footer-container"></div>
 
+  <script>
+    function toggleMenu() {
+      document.querySelector('.navbar-links')?.classList.toggle('show');
+    }
+  </script>
 
-    <script>
-        const version = Date.now();
-
-        // Cargar CSS sin caché
-        const link = document.createElement("link");
-        link.rel = "stylesheet";
-        link.href = "style.css?v=" + version;
-        document.head.appendChild(link);
-
-        // Cargar JS sin caché
-        const script = document.createElement("script");
-        script.src = "main.js?v=" + version;
-        document.body.appendChild(script);
-    </script>
-
-
-    <script>
-      function toggleMenu() {
-       const links = document.querySelector('.navbar-links');
-       links.classList.toggle('show');
-     }
-    </script>
-
-
-    <script src="slider.js"></script>
-
-    <div id="productos-container"></div>
-
-    <script src="script.js"></script>
+  <script src="js/navbar-footer.js"></script>
+  <script src="slider.js"></script>
+  <script src="script.js"></script>
 
 </body>
 </html>
