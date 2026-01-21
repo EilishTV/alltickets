@@ -3,107 +3,150 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Change Password</title>
+  <title>AllTickets · Change Password</title>
   <link rel="stylesheet" href="/assets/css/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+ <style>
+  main {
+    max-width: 600px;
+    margin: 40px auto;
+    margin-top: 6rem;
+    padding: 0 15px; /* margen lateral para móviles */
+  }
+
+  form {
+    box-sizing: border-box; /* importante */
+  }
+
+  h2 {
+    margin-bottom: 20px;
+    font-weight: bold;
+  }
+
+  form label {
+    display: block;
+    font-weight: bold;
+    margin-top: 15px;
+  }
+
+  form input[type="password"] {
+    width: 100%;
+    box-sizing: border-box; /* que el padding no rompa el ancho */
+    padding: 12px 15px;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+    font-size: 1rem;
+    margin-top: 5px;
+    transition: all 0.2s ease;
+  }
+
+  form input:focus {
+    outline: none;
+    border-color: #1e90ff;
+    box-shadow: 0 0 5px rgba(30,144,255,0.4);
+  }
+
+  form button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 20px;
+    background: #1e90ff;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    box-sizing: border-box; /* también aquí */
+  }
+
+  form button:hover {
+    background: #187bcd;
+  }
+
+  #passwordError {
+    color: red;
+    margin-top: 10px;
+    display: none;
+  }
+
+  #passwordSuccess {
+    color: green;
+    margin-top: 10px;
+    display: none;
+  }
+</style>
+
 </head>
 <body>
+
   <div id="navbar-container"></div>
 
-  <main style="max-width:800px; margin:40px auto; margin-top:6rem; padding: 0 10px;">
-
-
-    <h2>Cambiar Contraseña</h2>
-    <form id="passwordForm" style="display:flex; flex-direction:column; gap:10px;">
-      <label>Contraseña actual:</label>
+  <main>
+    <h2>Change Password</h2>
+    <form id="passwordForm">
+      <label>Current Password</label>
       <input type="password" id="currentPassword" required>
 
-      <label>Nueva contraseña:</label>
+      <label>New Password</label>
       <input type="password" id="newPassword" required>
 
-      <label>Confirmar nueva contraseña:</label>
+      <label>Confirm New Password</label>
       <input type="password" id="confirmPassword" required>
 
-      <button type="submit" style="padding:12px; background:#1e90ff; color:white; border:none; border-radius:10px; cursor:pointer;">Cambiar Contraseña</button>
-
-      <div id="passwordError" style="color:red; margin-top:5px; display:none;"></div>
+      <button type="submit">Update Password</button>
+      <div id="passwordError"></div>
+      <div id="passwordSuccess"></div>
     </form>
-
-    <button id="logoutBtn" style="width:100%; padding:12px; background:#1e90ff; color:white; border:none; border-radius:10px; cursor:pointer; margin-top:30px;">Logout</button>
-
   </main>
 
   <script type="module">
     import { auth } from "../../js/firebase.js";
-    import { onAuthStateChanged, updatePassword, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-    import { db } from "../../js/firebase.js";
+    import { EmailAuthProvider, reauthenticateWithCredential, updatePassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
     const passwordForm = document.getElementById("passwordForm");
     const passwordError = document.getElementById("passwordError");
-    const logoutBtn = document.getElementById("logoutBtn");
-    const userHeader = document.getElementById("userHeader");
+    const passwordSuccess = document.getElementById("passwordSuccess");
 
-    // --- Header usuario ---
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) return;
-
-      const snap = await getDoc(doc(db, "users", user.uid));
-      const data = snap.exists() ? snap.data() : {};
-
-      const firstName = data.firstName || "";
-      const lastName = data.lastName || "";
-      const email = data.email || user.email;
-      const initials = `${firstName.charAt(0) || ''}${lastName.charAt(0) || ''}`.toUpperCase();
-
-      userHeader.innerHTML = `
-        <div style="width:50px; height:50px; border-radius:50%; background:#ccc; display:flex; justify-content:center; align-items:center; font-weight:bold;">
-          ${initials}
-        </div>
-        <div>
-          <div style="font-weight:bold;">${firstName} ${lastName}</div>
-          <div style="color:#888;">${email}</div>
-        </div>
-      `;
+    // Redirigir si no está logueado
+    onAuthStateChanged(auth, (user) => {
+      if(!user) window.location.href = "../../login";
     });
 
-    // --- Cambiar contraseña ---
     passwordForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-      passwordError.style.display="none";
+      passwordError.style.display = "none";
+      passwordSuccess.style.display = "none";
 
       const user = auth.currentUser;
-      if (!user) return;
+      if(!user) return;
 
       const current = document.getElementById("currentPassword").value;
       const newPass = document.getElementById("newPassword").value;
       const confirm = document.getElementById("confirmPassword").value;
 
-      if (newPass !== confirm) {
-        passwordError.textContent = "Las contraseñas no coinciden";
+      if(newPass !== confirm){
+        passwordError.textContent = "Passwords do not match";
         passwordError.style.display = "block";
         return;
       }
 
       try {
+        // Reautenticación
         const credential = EmailAuthProvider.credential(user.email, current);
         await reauthenticateWithCredential(user, credential);
-        await updatePassword(user, newPass);
-        alert("Contraseña actualizada correctamente");
-        passwordForm.reset();
-      } catch (err) {
-        console.error(err);
-        passwordError.textContent = "Error cambiando la contraseña. Revisá la actual";
-        passwordError.style.display = "block";
-      }
-    });
 
-    // --- Logout ---
-    logoutBtn.addEventListener("click", () => {
-      if (typeof window.logout === "function") {
-        window.logout();
-      } else {
-        auth.signOut().then(() => window.location.href = "../../login");
+        // Actualizar contraseña
+        await updatePassword(user, newPass);
+
+        passwordForm.reset();
+        passwordSuccess.textContent = "Password updated successfully!";
+        passwordSuccess.style.display = "block";
+      } catch(err) {
+        console.error(err);
+        passwordError.textContent = "Error updating password. Check your current password.";
+        passwordError.style.display = "block";
       }
     });
   </script>
