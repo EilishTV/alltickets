@@ -7,11 +7,13 @@
   <!-- CSS absoluto -->
   <link rel="stylesheet" href="/assets/css/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">  
+
   <style>
     main {
       max-width: 800px;
-      margin: 40px auto;
-      margin-top: 6rem;
+      margin: 6rem auto 40px auto;
+      padding: 0 15px;
+      box-sizing: border-box;
     }
     form {
       display: grid;
@@ -40,24 +42,25 @@
       cursor: pointer;
       font-weight: bold;
     }
+    #loader {
+      text-align: center;
+      font-size: 18px;
+      margin: 30px 0;
+    }
   </style>
 </head>
-<main class="profile-container" style="
-    max-width:800px; 
-    margin:40px auto; 
-    margin-top:6rem;
-    padding: 0 15px; /* <- margen lateral para móviles */
-    box-sizing: border-box;
-">
-
 <body>
 
   <!-- Navbar -->
   <div id="navbar-container"></div>
 
-  <main>
+  <main class="profile-container">
     <h2>Información Personal</h2>
-    <form id="profileForm">
+
+    <!-- Loader -->
+    <div id="loader">Cargando datos...</div>
+
+    <form id="profileForm" style="display:none;">
       <div class="row">
         <div>
           <label>Nombre:</label>
@@ -117,6 +120,7 @@
     <button id="logoutBtn" style="margin-top:20px;">Logout</button>
   </main>
 
+  <!-- Firebase + Profile Script -->
   <script type="module">
     import { auth, db } from "/js/firebase.js";
     import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -125,13 +129,37 @@
     const profileForm = document.getElementById("profileForm");
     const profileError = document.getElementById("profileError");
     const logoutBtn = document.getElementById("logoutBtn");
+    const loader = document.getElementById("loader");
 
-    // Traer datos
+    // -----------------------------
+    // Esperar usuario y cargar datos
     onAuthStateChanged(auth, async (user) => {
-      if (!user) return;
+      if (!user) {
+        window.location.href = "/login";
+        return;
+      }
 
-      const snap = await getDoc(doc(db, "users", user.uid));
-      const data = snap.exists() ? snap.data() : {};
+      const userRef = doc(db, "users", user.uid);
+      let snap = await getDoc(userRef);
+
+      // Crear doc si no existe
+      if (!snap.exists()) {
+        await setDoc(userRef, {
+          email: user.email,
+          firstName: "",
+          lastName: "",
+          country: "",
+          idType: "",
+          idNumber: "",
+          phone: "",
+          dob: "",
+          gender: "",
+          createdAt: new Date()
+        });
+        snap = await getDoc(userRef);
+      }
+
+      const data = snap.data();
 
       document.getElementById("firstName").value = data.firstName || "";
       document.getElementById("lastName").value = data.lastName || "";
@@ -142,8 +170,13 @@
       document.getElementById("phone").value = data.phone || "";
       document.getElementById("dob").value = data.dob || "";
       document.getElementById("gender").value = data.gender || "";
+
+      loader.style.display = "none";
+      profileForm.style.display = "block";
     });
 
+    // -----------------------------
+    // Guardar cambios
     profileForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       profileError.style.display = "none";
@@ -172,8 +205,15 @@
       }
     });
 
-    logoutBtn.addEventListener("click", () => {
-      auth.signOut().then(() => window.location.href = "/login");
+    // -----------------------------
+    // Logout
+    logoutBtn.addEventListener("click", async () => {
+      try {
+        await auth.signOut();
+        window.location.href = "/login";
+      } catch (err) {
+        console.error(err);
+      }
     });
   </script>
 
