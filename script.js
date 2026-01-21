@@ -2,18 +2,50 @@
 // 📌 Loader
 // -----------------------------
 function crearLoader() {
+  // Crear el contenedor del loader
   const loadingDiv = document.createElement('div');
   loadingDiv.id = 'loading';
-  loadingDiv.style.cssText = `position: fixed; top:0; left:0; width:100%; height:100%; background-color:#f9f9f8; display:flex; justify-content:center; align-items:center; z-index:999;`;
+  loadingDiv.style.cssText = `
+    position: fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background-color:#f9f9f8;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    z-index:9999;
+  `;
+
+  // Spinner
   const spinner = document.createElement('div');
-  spinner.style.cssText = `border:6px solid #f3f3f3; border-top:6px solid #6200EA; border-radius:50%; width:30px; height:30px; animation:spin 1s linear infinite;`;
+  spinner.style.cssText = `
+    border:6px solid #f3f3f3;
+    border-top:6px solid #6200EA;
+    border-radius:50%;
+    width:30px;
+    height:30px;
+    animation:spin 1s linear infinite;
+  `;
   loadingDiv.appendChild(spinner);
   document.body.appendChild(loadingDiv);
 
+  // Animación
   const style = document.createElement('style');
-  style.textContent = `@keyframes spin {0%{transform:rotate(0)}100%{transform:rotate(360deg)}}`;
+  style.textContent = `
+    @keyframes spin {0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+  `;
   document.head.appendChild(style);
 }
+
+// Función para remover loader
+function removerLoader() {
+  const loader = document.getElementById('loading');
+  if(loader) loader.remove();
+}
+
+
 
 // -----------------------------
 // 📌 Crear sección de productos

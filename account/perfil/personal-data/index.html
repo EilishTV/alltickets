@@ -1,20 +1,17 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AllTickets · Personal Data</title>
-
-  <!-- CSS -->
-  <link rel="stylesheet" href="/assets/css/style.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-
+  <!-- CSS absoluto -->
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">  
   <style>
     main {
       max-width: 800px;
-      margin: 6rem auto 40px auto;
-      padding: 0 15px;
-      box-sizing: border-box;
+      margin: 40px auto;
+      margin-top: 6rem;
     }
     form {
       display: grid;
@@ -32,6 +29,7 @@
       padding: 10px;
       border-radius: 6px;
       border: 1px solid #ccc;
+      box-sizing: border-box;
     }
     button {
       padding: 12px;
@@ -42,13 +40,15 @@
       cursor: pointer;
       font-weight: bold;
     }
-    #loader {
-      text-align: center;
-      margin: 30px 0;
-      font-size: 18px;
-    }
   </style>
 </head>
+<main class="profile-container" style="
+    max-width:800px; 
+    margin:40px auto; 
+    margin-top:6rem;
+    padding: 0 15px; /* <- margen lateral para móviles */
+    box-sizing: border-box;
+">
 
 <body>
 
@@ -57,159 +57,132 @@
 
   <main>
     <h2>Información Personal</h2>
-
-    <!-- Loader -->
-    <div id="loader">Cargando datos...</div>
-
-    <form id="profileForm" style="display:none;">
+    <form id="profileForm">
       <div class="row">
         <div>
-          <label>Nombre</label>
-          <input type="text" id="firstName" required />
+          <label>Nombre:</label>
+          <input type="text" id="firstName" required>
         </div>
         <div>
-          <label>Apellido</label>
-          <input type="text" id="lastName" required />
+          <label>Apellido:</label>
+          <input type="text" id="lastName" required>
         </div>
       </div>
 
-      <label>Email</label>
-      <input type="email" id="email" disabled />
+      <label>Email:</label>
+      <input type="email" id="email" disabled>
 
-      <label>País</label>
-      <input type="text" id="country" />
+      <label>País:</label>
+      <input type="text" id="country">
 
       <div class="row">
         <div>
-          <label>Tipo de documento</label>
+          <label>Tipo de documento:</label>
           <select id="idType">
-            <option value="">Selecciona…</option>
+            <option value="">Selecciona...</option>
             <option value="DNI">DNI</option>
             <option value="Pasaporte">Pasaporte</option>
             <option value="Otro">Otro</option>
           </select>
         </div>
         <div>
-          <label>Número de documento</label>
-          <input type="text" id="idNumber" />
+          <label>Número de documento:</label>
+          <input type="text" id="idNumber">
         </div>
       </div>
 
       <div class="row">
         <div>
-          <label>Teléfono</label>
-          <input type="tel" id="phone" />
+          <label>Teléfono:</label>
+          <input type="tel" id="phone">
         </div>
         <div>
-          <label>Fecha de nacimiento</label>
-          <input type="date" id="dob" />
+          <label>Fecha de nacimiento:</label>
+          <input type="date" id="dob">
         </div>
       </div>
 
-      <label>Género</label>
+      <label>Género:</label>
       <select id="gender">
-        <option value="">Selecciona…</option>
+        <option value="">Selecciona...</option>
         <option value="Masculino">Masculino</option>
         <option value="Femenino">Femenino</option>
         <option value="Otro">Otro</option>
       </select>
 
       <button type="submit">Guardar cambios</button>
-      <div id="profileError" style="color:red; display:none;"></div>
+      <div id="profileError" style="color:red; margin-top:5px; display:none;"></div>
     </form>
 
     <button id="logoutBtn" style="margin-top:20px;">Logout</button>
   </main>
 
-  <!-- 🔥 SCRIPT PERFIL -->
   <script type="module">
-    import { auth, db, BASE_PATH } from "/js/firebase.js";
+    import { auth, db } from "/js/firebase.js";
     import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-    const loader = document.getElementById("loader");
-    const form = document.getElementById("profileForm");
+    const profileForm = document.getElementById("profileForm");
+    const profileError = document.getElementById("profileError");
     const logoutBtn = document.getElementById("logoutBtn");
 
-    const firstName = document.getElementById("firstName");
-    const lastName  = document.getElementById("lastName");
-    const email     = document.getElementById("email");
-    const country   = document.getElementById("country");
-    const idType    = document.getElementById("idType");
-    const idNumber  = document.getElementById("idNumber");
-    const phone     = document.getElementById("phone");
-    const dob       = document.getElementById("dob");
-    const gender    = document.getElementById("gender");
-
+    // Traer datos
     onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        window.location.replace(BASE_PATH + "login/");
-        return;
-      }
+      if (!user) return;
 
-      const ref = doc(db, "users", user.uid);
-      let snap = await getDoc(ref);
+      const snap = await getDoc(doc(db, "users", user.uid));
+      const data = snap.exists() ? snap.data() : {};
 
-      if (!snap.exists()) {
-        await setDoc(ref, {
-          email: user.email,
-          firstName: "",
-          lastName: "",
-          country: "",
-          idType: "",
-          idNumber: "",
-          phone: "",
-          dob: "",
-          gender: "",
-          createdAt: new Date()
-        });
-        snap = await getDoc(ref);
-      }
-
-      const data = snap.data();
-
-      firstName.value = data.firstName || "";
-      lastName.value  = data.lastName || "";
-      email.value     = data.email || user.email;
-      country.value   = data.country || "";
-      idType.value    = data.idType || "";
-      idNumber.value  = data.idNumber || "";
-      phone.value     = data.phone || "";
-      dob.value       = data.dob || "";
-      gender.value    = data.gender || "";
-
-      loader.style.display = "none";
-      form.style.display = "grid";
+      document.getElementById("firstName").value = data.firstName || "";
+      document.getElementById("lastName").value = data.lastName || "";
+      document.getElementById("email").value = data.email || user.email;
+      document.getElementById("country").value = data.country || "";
+      document.getElementById("idType").value = data.idType || "";
+      document.getElementById("idNumber").value = data.idNumber || "";
+      document.getElementById("phone").value = data.phone || "";
+      document.getElementById("dob").value = data.dob || "";
+      document.getElementById("gender").value = data.gender || "";
     });
 
-    form.addEventListener("submit", async (e) => {
+    profileForm.addEventListener("submit", async (e) => {
       e.preventDefault();
+      profileError.style.display = "none";
+
       const user = auth.currentUser;
       if (!user) return;
 
-      await setDoc(doc(db, "users", user.uid), {
-        firstName: firstName.value.trim(),
-        lastName: lastName.value.trim(),
-        country: country.value.trim(),
-        idType: idType.value,
-        idNumber: idNumber.value.trim(),
-        phone: phone.value.trim(),
-        dob: dob.value,
-        gender: gender.value
-      }, { merge: true });
+      const updatedData = {
+        firstName: document.getElementById("firstName").value.trim(),
+        lastName: document.getElementById("lastName").value.trim(),
+        country: document.getElementById("country").value.trim(),
+        idType: document.getElementById("idType").value,
+        idNumber: document.getElementById("idNumber").value.trim(),
+        phone: document.getElementById("phone").value.trim(),
+        dob: document.getElementById("dob").value,
+        gender: document.getElementById("gender").value
+      };
 
-      alert("Datos guardados correctamente");
+      try {
+        await setDoc(doc(db, "users", user.uid), updatedData, { merge: true });
+        alert("Información actualizada correctamente");
+      } catch (err) {
+        console.error(err);
+        profileError.textContent = "Error guardando info";
+        profileError.style.display = "block";
+      }
     });
 
-    logoutBtn.addEventListener("click", async () => {
-      await signOut(auth);
-      window.location.replace(BASE_PATH + "login/");
+    logoutBtn.addEventListener("click", () => {
+      auth.signOut().then(() => window.location.href = "/login");
     });
+
+    
   </script>
 
-  <!-- Navbar / global scripts -->
+  <!-- Navbar y footer -->
   <script type="module" src="/js/navbar-footer.js"></script>
-  <script type="module" src="/js/script.js"></script>
-
+  <script type="module" src="/script.js"></script>
 </body>
 </html>
+
+
