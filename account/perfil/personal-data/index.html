@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AllTickets · Personal Data</title>
-  <!-- CSS absoluto -->
- <link rel="stylesheet" href="../../assets/css/style.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">  
+
+  <!-- Base Path (ruta base dinámica) -->
+  <base href="/">
+
+  <!-- CSS Absoluto -->
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
   <style>
     main {
       max-width: 800px;
@@ -42,13 +47,6 @@
     }
   </style>
 </head>
-<main class="profile-container" style="
-    max-width:800px; 
-    margin:40px auto; 
-    margin-top:6rem;
-    padding: 0 15px; /* <- margen lateral para móviles */
-    box-sizing: border-box;
-">
 
 <body>
 
@@ -61,23 +59,23 @@
       <div class="row">
         <div>
           <label>Nombre:</label>
-          <input type="text" id="firstName" required>
+          <input type="text" id="firstName" required />
         </div>
         <div>
           <label>Apellido:</label>
-          <input type="text" id="lastName" required>
+          <input type="text" id="lastName" required />
         </div>
       </div>
 
-      <label>Email:</label>
-      <input type="email" id="email" disabled>
+      <label>Email</label>
+      <input type="email" id="email" disabled />
 
-      <label>País:</label>
-      <input type="text" id="country">
+      <label>País</label>
+      <input type="text" id="country" />
 
       <div class="row">
         <div>
-          <label>Tipo de documento:</label>
+          <label>Tipo de documento</label>
           <select id="idType">
             <option value="">Selecciona...</option>
             <option value="DNI">DNI</option>
@@ -86,23 +84,23 @@
           </select>
         </div>
         <div>
-          <label>Número de documento:</label>
-          <input type="text" id="idNumber">
+          <label>Número de documento</label>
+          <input type="text" id="idNumber" />
         </div>
       </div>
 
       <div class="row">
         <div>
-          <label>Teléfono:</label>
-          <input type="tel" id="phone">
+          <label>Teléfono</label>
+          <input type="tel" id="phone" />
         </div>
         <div>
-          <label>Fecha de nacimiento:</label>
-          <input type="date" id="dob">
+          <label>Fecha de nacimiento</label>
+          <input type="date" id="dob" />
         </div>
       </div>
 
-      <label>Género:</label>
+      <label>Género</label>
       <select id="gender">
         <option value="">Selecciona...</option>
         <option value="Masculino">Masculino</option>
@@ -117,72 +115,101 @@
     <button id="logoutBtn" style="margin-top:20px;">Logout</button>
   </main>
 
-  <script type="module">
-    import { auth, db } from "/js/firebase.js";
-    import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+<script type="module">
+  import { auth, db } from "../../js/firebase.js";
+  import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-    const profileForm = document.getElementById("profileForm");
-    const profileError = document.getElementById("profileError");
-    const logoutBtn = document.getElementById("logoutBtn");
+  const form = document.getElementById("profileForm");
+  const errorDiv = document.getElementById("profileError");
 
-    // Traer datos
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) return;
+  const fields = {
+    firstName: document.getElementById("firstName"),
+    lastName: document.getElementById("lastName"),
+    email: document.getElementById("email"),
+    country: document.getElementById("country"),
+    idType: document.getElementById("idType"),
+    idNumber: document.getElementById("idNumber"),
+    phone: document.getElementById("phone"),
+    dob: document.getElementById("dob"),
+    gender: document.getElementById("gender"),
+  };
 
-      const snap = await getDoc(doc(db, "users", user.uid));
-      const data = snap.exists() ? snap.data() : {};
+  // 🔑 ESTE es el punto clave
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      window.location.replace("../../login/");
+      return;
+    }
 
-      document.getElementById("firstName").value = data.firstName || "";
-      document.getElementById("lastName").value = data.lastName || "";
-      document.getElementById("email").value = data.email || user.email;
-      document.getElementById("country").value = data.country || "";
-      document.getElementById("idType").value = data.idType || "";
-      document.getElementById("idNumber").value = data.idNumber || "";
-      document.getElementById("phone").value = data.phone || "";
-      document.getElementById("dob").value = data.dob || "";
-      document.getElementById("gender").value = data.gender || "";
-    });
+    const ref = doc(db, "users", user.uid);
+    let snap = await getDoc(ref);
 
-    profileForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      profileError.style.display = "none";
+    if (!snap.exists()) {
+      await setDoc(ref, {
+        email: user.email,
+        firstName: "",
+        lastName: "",
+        country: "",
+        idType: "",
+        idNumber: "",
+        phone: "",
+        dob: "",
+        gender: "",
+        createdAt: new Date()
+      });
+      snap = await getDoc(ref);
+    }
 
-      const user = auth.currentUser;
-      if (!user) return;
+    const data = snap.data();
 
-      const updatedData = {
-        firstName: document.getElementById("firstName").value.trim(),
-        lastName: document.getElementById("lastName").value.trim(),
-        country: document.getElementById("country").value.trim(),
-        idType: document.getElementById("idType").value,
-        idNumber: document.getElementById("idNumber").value.trim(),
-        phone: document.getElementById("phone").value.trim(),
-        dob: document.getElementById("dob").value,
-        gender: document.getElementById("gender").value
-      };
+    fields.firstName.value = data.firstName || "";
+    fields.lastName.value  = data.lastName || "";
+    fields.email.value     = data.email || user.email;
+    fields.country.value   = data.country || "";
+    fields.idType.value    = data.idType || "";
+    fields.idNumber.value  = data.idNumber || "";
+    fields.phone.value     = data.phone || "";
+    fields.dob.value       = data.dob || "";
+    fields.gender.value    = data.gender || "";
+  });
 
-      try {
-        await setDoc(doc(db, "users", user.uid), updatedData, { merge: true });
-        alert("Información actualizada correctamente");
-      } catch (err) {
-        console.error(err);
-        profileError.textContent = "Error guardando info";
-        profileError.style.display = "block";
-      }
-    });
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-    logoutBtn.addEventListener("click", () => {
-      auth.signOut().then(() => window.location.href = "/login");
-    });
+    const user = auth.currentUser;
+    if (!user) return;
 
-    
-  </script>
+    try {
+      await setDoc(doc(db, "users", user.uid), {
+        firstName: fields.firstName.value.trim(),
+        lastName: fields.lastName.value.trim(),
+        country: fields.country.value.trim(),
+        idType: fields.idType.value,
+        idNumber: fields.idNumber.value.trim(),
+        phone: fields.phone.value.trim(),
+        dob: fields.dob.value,
+        gender: fields.gender.value
+      }, { merge: true });
 
-  <!-- Navbar y footer -->
-  <script type="module" src="/../../js/navbar-footer.js"></script>
-  <script type="module" src="/../../script.js"></script>
+      alert("Datos guardados correctamente");
+    } catch (err) {
+      errorDiv.textContent = "Error guardando los datos";
+      errorDiv.style.display = "block";
+      console.error(err);
+    }
+  });
+
+  document.getElementById("logoutBtn").addEventListener("click", async () => {
+    await signOut(auth);
+    window.location.replace("../../login/");
+  });
+</script>
+
+
+
+  <script type="module" src="js/navbar-footer.js"></script>
+  <script type="module" src="script.js"></script>
+
 </body>
 </html>
-
-
