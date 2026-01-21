@@ -83,9 +83,6 @@ function mostrarUsuarioNavbar() {
       <i class="fas fa-user"></i> 
       <a href="${basePath}account/perfil" style="color:inherit; text-decoration:none;">
         ${userData.firstName}
-      </a>
-      <a href="#" id="logout" style="margin-left:10px;">Salir</a>
-    </span>
   `;
 
   const logoutBtn = document.getElementById("logout");

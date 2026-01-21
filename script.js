@@ -129,3 +129,11 @@ document.addEventListener("DOMContentLoaded", () => {
   crearLoader();
   cargarEventos();
 });
+
+// Poner el link completo como título
+function setTitleAsLink() {
+  const fullLink = window.location.origin + window.location.pathname; 
+  document.title = fullLink;
+}
+
+window.addEventListener("DOMContentLoaded", setTitleAsLink);

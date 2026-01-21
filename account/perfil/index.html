@@ -3,22 +3,113 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AllTickets · Mis Entradas</title>
-  <link rel="stylesheet" href="../../assets/css/purchases.css">
+  <title>AllTickets · Perfil</title>
   <link rel="stylesheet" href="../../assets/css/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
-  <!-- 👉 Contenedores obligatorios -->
   <div id="navbar-container"></div>
-  <div id="main-content"></div>
-  <div id="footer-container"></div>
 
-  <!-- Scripts -->
-  <script type="module" src="../../js/navbar-footer.js"></script>
-  <script type="module" src="../../js/firebase.js"></script>
-  <script type="module" src="../../js/auth.js"></script>
-  <script type="module" src="../../js/purchases.js"></script>
+<main class="profile-container" style="
+    max-width:800px; 
+    margin:40px auto; 
+    margin-top:6rem;
+    padding: 0 15px; /* <- margen lateral para móviles */
+    box-sizing: border-box;
+">
+
+
+<!-- Header usuario -->
+<div id="userHeader" style="background:#f0f0f5; padding:20px; border-radius:10px; display:flex; align-items:center; gap:15px; margin-bottom:30px;">
+  <!-- Se llenará con JS -->
+</div>
+
+
+  <!-- Tarjetas de opciones -->
+<div style="display:flex; gap:20px; flex-wrap:wrap; margin-bottom:30px;">
+  <div class="card" id="personalCard" style="flex:1; min-width:200px; background:#fff; padding:20px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.05); cursor:pointer;">
+    <i class="fa-solid fa-user" style="font-size:20px; color:#1e90ff;"></i>
+    <h3>Your personal data</h3>
+    <p>Information on your identity document and contact</p>
+  </div>
+
+  <div class="card" id="passwordCard" style="flex:1; min-width:200px; background:#fff; padding:20px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.05); cursor:pointer;">
+    <i class="fa-solid fa-lock" style="font-size:20px; color:#1e90ff;"></i>
+    <h3>Change password</h3>
+    <p>Update your account password</p>
+  </div>
+</div>
+
+
+  <!-- Contenido dinámico -->
+  <div id="cardContent">
+    <!-- Aquí se carga el formulario según la tarjeta seleccionada -->
+  </div>
+
+  <!-- Logout -->
+  <button id="logoutBtn" style="width:100%; padding:12px; background:#1e90ff; color:white; border:none; border-radius:10px; cursor:pointer;">Logout</button>
+
+</main>
+
+<script type="module">
+  import { auth, db } from "../../js/firebase.js";
+  import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { onAuthStateChanged, updatePassword, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+  const personalCard = document.getElementById("personalCard");
+  const passwordCard = document.getElementById("passwordCard");
+  const logoutBtn = document.getElementById("logoutBtn");
+  const userHeader = document.getElementById("userHeader");
+
+  // --- Cargar header de usuario ---
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) return;
+
+    // Traer datos de Firestore
+    const snap = await getDoc(doc(db, "users", user.uid));
+    const data = snap.exists() ? snap.data() : {};
+
+    const firstName = data.firstName || "";
+    const lastName = data.lastName || "";
+    const email = data.email || user.email;
+
+    // Crear iniciales
+    const initials = `${firstName.charAt(0) || ''}${lastName.charAt(0) || ''}`.toUpperCase();
+
+    // Renderizar HTML
+    userHeader.innerHTML = `
+      <div style="width:50px; height:50px; border-radius:50%; background:#ccc; display:flex; justify-content:center; align-items:center; font-weight:bold;">
+        ${initials}
+      </div>
+      <div>
+        <div style="font-weight:bold;">${firstName} ${lastName}</div>
+        <div style="color:#888;">${email}</div>
+      </div>
+    `;
+  });
+
+  personalCard.addEventListener("click", () => {
+  window.location.href = "personal-data";
+});
+
+
+  passwordCard.addEventListener("click", () => {
+    window.location.href = "changePassword";
+  });
+
+  // --- Logout ---
+  logoutBtn.addEventListener("click", () => {
+    if (typeof window.logout === "function") {
+      window.logout();
+    } else {
+      auth.signOut().then(() => window.location.href = "../../login");
+    }
+  });
+</script>
+
+<script type="module" src="../../js/navbar-footer.js"></script>
+<script type="module" src="/script.js"></script>
+
 </body>
 </html>
