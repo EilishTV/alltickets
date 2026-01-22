@@ -22,10 +22,6 @@ function crearNavbar() {
         </a>
       </div>
 
-      <div class="navbar-links">
-        <a href="#">Search</a>
-      </div>
-
       <div class="navbar-cart">
         <span id="mis-entradas"></span>
 

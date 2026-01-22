@@ -54,50 +54,56 @@
 
 <script type="module">
   import { auth, db } from "../../js/firebase.js";
-  import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-  import { onAuthStateChanged, updatePassword, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
   const personalCard = document.getElementById("personalCard");
   const passwordCard = document.getElementById("passwordCard");
   const logoutBtn = document.getElementById("logoutBtn");
   const userHeader = document.getElementById("userHeader");
 
-  // --- Cargar header de usuario ---
+  // 🔐 Proteger perfil y cargar datos
   onAuthStateChanged(auth, async (user) => {
-    if (!user) return;
+    if (!user) {
+      // solo redirige, NO hace signOut
+      window.location.replace("../../login/");
+      return;
+    }
 
-    // Traer datos de Firestore
-    const snap = await getDoc(doc(db, "users", user.uid));
-    const data = snap.exists() ? snap.data() : {};
+    try {
+      const snap = await getDoc(doc(db, "users", user.uid));
+      const data = snap.exists() ? snap.data() : {};
 
-    const firstName = data.firstName || "";
-    const lastName = data.lastName || "";
-    const email = data.email || user.email;
+      const firstName = data.firstName || "";
+      const lastName = data.lastName || "";
+      const email = data.email || user.email;
 
-    // Crear iniciales
-    const initials = `${firstName.charAt(0) || ''}${lastName.charAt(0) || ''}`.toUpperCase();
+      const initials = `${firstName.charAt(0) || ""}${lastName.charAt(0) || ""}`.toUpperCase();
 
-    // Renderizar HTML
-    userHeader.innerHTML = `
-      <div style="width:50px; height:50px; border-radius:50%; background:#ccc; display:flex; justify-content:center; align-items:center; font-weight:bold;">
-        ${initials}
-      </div>
-      <div>
-        <div style="font-weight:bold;">${firstName} ${lastName}</div>
-        <div style="color:#888;">${email}</div>
-      </div>
-    `;
+      userHeader.innerHTML = `
+        <div style="width:50px;height:50px;border-radius:50%;background:#ccc;display:flex;align-items:center;justify-content:center;font-weight:bold;">
+          ${initials}
+        </div>
+        <div>
+          <div style="font-weight:bold;">${firstName} ${lastName}</div>
+          <div style="color:#888;">${email}</div>
+        </div>
+      `;
+    } catch (err) {
+      console.error("Error cargando perfil:", err);
+    }
   });
 
+  // 👉 Navegación
   personalCard.addEventListener("click", () => {
-  window.location.href = "personal-data";
-});
-
+    window.location.href = "personal-data/";
+  });
 
   passwordCard.addEventListener("click", () => {
-    window.location.href = "changePassword";
+    window.location.href = "changePassword/";
   });
 
+  // 🚪 Logout (definido en auth.js)
   // --- Logout ---
   logoutBtn.addEventListener("click", () => {
     if (typeof window.logout === "function") {
@@ -107,6 +113,8 @@
     }
   });
 </script>
+
+
 
 <script type="module" src="../../js/navbar-footer.js"></script>
 <script type="module" src="/script.js"></script>

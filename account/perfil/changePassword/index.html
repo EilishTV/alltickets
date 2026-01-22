@@ -99,58 +99,63 @@
   </main>
 
   <!-- 🔥 Lógica Firebase -->
-  <script type="module">
-    import { auth } from "../../../js/firebase.js";
-    import {
-      EmailAuthProvider,
-      reauthenticateWithCredential,
-      updatePassword,
-      onAuthStateChanged
-    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+<script type="module">
+  import { auth } from "../../../js/firebase.js";
+  import {
+    EmailAuthProvider,
+    reauthenticateWithCredential,
+    updatePassword
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-    const form = document.getElementById("passwordForm");
-    const errorDiv = document.getElementById("passwordError");
-    const successDiv = document.getElementById("passwordSuccess");
+  const form = document.getElementById("passwordForm");
+  const errorDiv = document.getElementById("passwordError");
+  const successDiv = document.getElementById("passwordSuccess");
 
-    onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        window.location.replace("../../login/");
-      }
-    });
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    errorDiv.style.display = "none";
+    successDiv.style.display = "none";
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      errorDiv.style.display = "none";
-      successDiv.style.display = "none";
+    const user = auth.currentUser;
 
-      const user = auth.currentUser;
-      if (!user) return;
+    // Esto solo por seguridad extrema (no debería pasar)
+    if (!user) {
+      errorDiv.textContent = "Sesión inválida. Recargá la página.";
+      errorDiv.style.display = "block";
+      return;
+    }
 
-      const current = currentPassword.value;
-      const newPass = newPassword.value;
-      const confirm = confirmPassword.value;
+    const current = currentPassword.value;
+    const newPass = newPassword.value;
+    const confirm = confirmPassword.value;
 
-      if (newPass !== confirm) {
-        errorDiv.textContent = "Passwords do not match";
-        errorDiv.style.display = "block";
-        return;
-      }
+    if (newPass !== confirm) {
+      errorDiv.textContent = "Passwords do not match";
+      errorDiv.style.display = "block";
+      return;
+    }
 
-      try {
-        const credential = EmailAuthProvider.credential(user.email, current);
-        await reauthenticateWithCredential(user, credential);
-        await updatePassword(user, newPass);
+    try {
+      const credential = EmailAuthProvider.credential(
+        user.email,
+        current
+      );
 
-        form.reset();
-        successDiv.textContent = "Password updated successfully!";
-        successDiv.style.display = "block";
-      } catch (err) {
-        console.error(err);
-        errorDiv.textContent = "Error updating password. Check your current password.";
-        errorDiv.style.display = "block";
-      }
-    });
-  </script>
+      await reauthenticateWithCredential(user, credential);
+      await updatePassword(user, newPass);
+
+      form.reset();
+      successDiv.textContent = "Password updated successfully!";
+      successDiv.style.display = "block";
+    } catch (err) {
+      console.error(err);
+      errorDiv.textContent =
+        "Error updating password. Check your current password.";
+      errorDiv.style.display = "block";
+    }
+  });
+</script>
+
 
   <!-- Navbar/footer -->
   <script type="module" src="../../../js/navbar-footer.js"></script>
