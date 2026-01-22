@@ -1,203 +1,236 @@
-document.addEventListener("DOMContentLoaded", () => {
-  (async function initSlider() {
-    try {
-      let pathParts = window.location.pathname.split("/").filter(Boolean);
-      let depth;
-      if (
-        window.location.hostname === "127.0.0.1" ||
-        window.location.hostname === "localhost"
-      ) {
-        depth = pathParts.length - 1;
-      } else {
-        depth = pathParts.length - 2;
-      }
-      let basePath = "";
-      for (let i = 0; i < depth; i++) {
-        basePath += "../";
-      }
+document.addEventListener("DOMContentLoaded", async () => {
+  try {
+    // =============================
+    // BASE PATH
+    // =============================
+    let path = window.location.pathname.split("/").filter(Boolean);
+    let depth =
+      location.hostname === "localhost" || location.hostname === "127.0.0.1"
+        ? path.length - 1
+        : path.length - 2;
 
-      const csvUrl =
-        "https://docs.google.com/spreadsheets/d/1WZnQmVeQGM1JnSzF_6Cq3ZOHaJf70lJtfHnyZIjLpjI/export?format=csv";
+    let basePath = "../".repeat(Math.max(depth, 0));
 
-      async function fetchEvents() {
-        const response = await fetch(csvUrl);
-        if (!response.ok) throw new Error("Error cargando CSV");
-        const data = await response.text();
-        const rows = data.split("\n").map((r) => r.split(","));
-        const headers = rows.shift().map((h) => h.trim());
-        return rows.map((row) => {
-          let obj = {};
-          headers.forEach((h, i) => (obj[h] = row[i]?.trim() || ""));
-          obj.idEvento = obj.nombre
-            .toLowerCase()
-            .replace(/\s+/g, "-")
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "");
-          return obj;
-        });
-      }
+    // =============================
+    // CSV
+    // =============================
+    const csvUrl =
+      "https://docs.google.com/spreadsheets/d/1WZnQmVeQGM1JnSzF_6Cq3ZOHaJf70lJtfHnyZIjLpjI/export?format=csv";
 
-      function createSlider(events) {
-        const slider = document.getElementById("slider");
-        if (!slider) return;
+    const res = await fetch(csvUrl);
+    const text = await res.text();
+    const rows = text.split("\n").map(r => r.split(","));
+    const headers = rows.shift();
 
-        // Mantener proporciones de imágenes pero agregar altura y menos espacio abajo
-        slider.style.position = "relative";
-        slider.style.overflow = "hidden";
-        slider.style.width = "calc(100% - 40px)"; // 40px a cada lado
-        slider.style.aspectRatio = "1920/720"; // mantiene proporción original
-        slider.style.margin = "80px auto 20px auto"; // menos espacio abajo
-        slider.style.borderRadius = "12px";
-        slider.style.boxShadow = "0 4px 12px rgba(0,0,0,0.3)";
+    const events = rows.map(row => {
+      let e = {};
+      headers.forEach((h, i) => (e[h.trim()] = row[i]?.trim() || ""));
+      e.idEvento = e.nombre
+        .toLowerCase()
+        .replace(/\s+/g, "-")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+      return e;
+    });
 
-        const track = document.createElement("div");
-        track.style.display = "flex";
-        track.style.transition = "transform 1.0s ease";
-        track.style.height = "100%";
+    const slider = document.getElementById("slider");
+    if (!slider) return;
 
-        const extendedEvents = [
-          events[events.length - 1],
-          ...events,
-          events[0],
-        ];
-
-        extendedEvents.forEach((event) => {
-          const slide = document.createElement("div");
-          slide.style.minWidth = "100%";
-          slide.style.height = "100%";
-          slide.style.position = "relative";
-          slide.style.backgroundImage = `url(${event.img})`;
-          slide.style.backgroundSize = "cover";
-          slide.style.backgroundPosition = "center";
-          slide.style.borderRadius = "12px";
-
-          const overlay = document.createElement("div");
-          overlay.style.position = "absolute";
-          overlay.style.top = 0;
-          overlay.style.left = 0;
-          overlay.style.width = "100%";
-          overlay.style.height = "100%";
-          overlay.style.background =
-            "linear-gradient(to right, rgba(0,0,0,0.65), rgba(0,0,0,0))";
-          overlay.style.borderRadius = "12px";
-
-          const info = document.createElement("div");
-          info.style.position = "absolute";
-          info.style.bottom = "7%";
-          info.style.left = "3%";
-          info.style.color = "white";
-          info.style.fontFamily = "Arial, sans-serif";
-          info.innerHTML = `
-            <a href="${basePath}pages/events/?id=${event.idEvento}" style="text-decoration:none; color:white;">
-              <h2 style="font-size:2vw; margin:0;">${event.nombre}</h2>
-            </a>
-            <p style="margin:0.5em 0; font-size:1vw;">${event.lugar}</p>
-            <a href="${basePath}pages/events/?id=${event.idEvento}" style="
-              display:inline-block;
-              margin-top:1em;
-              background:#fff;
-              color:#000;
-              padding:0.5em 1em;
-              border-radius:0.5em;
-              font-weight:bold;
-              text-decoration:none;
-              transition:0.3s;
-            " onmouseover="this.style.background='#ddd'" onmouseout="this.style.background='#fff'">
-              Comprar
-            </a>
-          `;
-
-          slide.appendChild(overlay);
-          slide.appendChild(info);
-          track.appendChild(slide);
-        });
-
-        slider.appendChild(track);
-
-        // Indicadores con mismo margen lateral
-        const indicators = document.createElement("div");
-        indicators.style.position = "relative";
-        indicators.style.width = "calc(100% - 80px)";
-        indicators.style.margin = "15px auto 0 auto"; 
-        indicators.style.display = "flex";
-        indicators.style.justifyContent = "right";
-        indicators.style.gap = "8px";
-
-        const dots = events.map((_, i) => {
-          const dot = document.createElement("div");
-          dot.style.width = "12px";
-          dot.style.height = "12px";
-          dot.style.borderRadius = "50%";
-          dot.style.background = i === 0 ? "black" : "gray";
-          indicators.appendChild(dot);
-          return dot;
-        });
-
-        slider.insertAdjacentElement("afterend", indicators);
-
-        let index = 1;
-        track.style.transform = `translateX(-${index * 100}%)`;
-
-        function updateDots(realIndex) {
-          dots.forEach(
-            (dot, i) => (dot.style.background = i === realIndex ? "black" : "gray")
-          );
-        }
-
-        function goToSlide(newIndex) {
-          index = newIndex;
-          track.style.transition = "transform 1s ease";
-          track.style.transform = `translateX(-${index * 100}%)`;
-        }
-
-        track.addEventListener("transitionend", () => {
-          if (index === 0) {
-            track.style.transition = "none";
-            index = events.length;
-            track.style.transform = `translateX(-${index * 100}%)`;
-          }
-          if (index === events.length + 1) {
-            track.style.transition = "none";
-            index = 1;
-            track.style.transform = `translateX(-${index * 100}%)`;
-          }
-          updateDots(index - 1);
-        });
-
-        setInterval(() => goToSlide(index + 1), 7000);
-
-        let startX = 0,
-          isDragging = false;
-
-        slider.addEventListener("mousedown", (e) => {
-          startX = e.pageX;
-          isDragging = true;
-        });
-        slider.addEventListener("mouseup", (e) => {
-          if (!isDragging) return;
-          let diff = e.pageX - startX;
-          if (diff > 50) goToSlide(index - 1);
-          else if (diff < -50) goToSlide(index + 1);
-          isDragging = false;
-        });
-        slider.addEventListener("mouseleave", () => (isDragging = false));
-        slider.addEventListener("touchstart", (e) => {
-          startX = e.touches[0].clientX;
-          isDragging = true;
-        });
-        slider.addEventListener("touchend", (e) => {
-          if (!isDragging) return;
-          let diff = e.changedTouches[0].clientX - startX;
-          if (diff > 50) goToSlide(index - 1);
-          else if (diff < -50) goToSlide(index + 1);
-          isDragging = false;
-        });
+    // =============================
+    // STYLES
+    // =============================
+    const style = document.createElement("style");
+    style.textContent = `
+      #slider {
+        margin-top: 6rem;
+        padding: 0 16px;
       }
 
-      const events = await fetchEvents();
-      createSlider(events);
-    } catch (error) {
-      console.error("Error inicializando slider:", error);
-    }
-  })();
+      /* ===== DESKTOP ===== */
+      .desktop-slider {
+        display: none;
+        aspect-ratio: 1920 / 720;
+        border-radius: 8px;
+        overflow: hidden;
+        position: relative;
+        box-shadow: 0 20px 55px rgba(0,0,0,.45);
+      }
+
+      .desktop-track {
+        display: flex;
+        height: 100%;
+        transition: transform .9s ease;
+      }
+
+      .desktop-slide {
+        min-width: 100%;
+        position: relative;
+      }
+
+      .desktop-slide img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .desktop-gradient {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          to right,
+          rgba(0,0,0,.7),
+          rgba(0,0,0,.35),
+          rgba(0,0,0,0)
+        );
+      }
+
+      .desktop-info {
+        position: absolute;
+        bottom: 14%;
+        left: 5%;
+        max-width: 520px;
+        color: white;
+        font-family: system-ui;
+      }
+
+      .desktop-info h2 {
+        margin: 0 0 12px;
+        font-size: clamp(28px, 3vw, 46px);
+        line-height: 1.1;
+      }
+
+      .desktop-info p {
+        margin: 0 0 22px;
+        font-size: clamp(15px, 1.3vw, 19px);
+        opacity: .85;
+      }
+
+      .buy-btn {
+        display: inline-block;
+        background: white;
+        color: black;
+        padding: 12px 24px;
+        border-radius: 999px;
+        font-weight: 600;
+        font-size: 14px;
+        text-decoration: none;
+      }
+
+      /* ===== MOBILE (CARD) ===== */
+      .mobile-list {
+        display: flex;
+        gap: 16px;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        padding-bottom: 14px;
+      }
+
+      .mobile-card {
+        min-width: 100%;
+        background: #202020;
+        border-radius: 12px;
+        overflow: hidden;
+        scroll-snap-align: start;
+        
+        text-decoration: none;
+        color: white;
+        font-family: system-ui;
+      }
+
+      .mobile-image {
+        aspect-ratio: 1920 / 720;
+        position: relative;
+      }
+
+      .mobile-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .mobile-info {
+        padding: 14px;
+      }
+
+      .mobile-info h3 {
+        margin: 0 0 6px;
+        font-size: 18px;
+      }
+
+      .mobile-info p {
+        margin: 0 0 12px;
+        font-size: 14px;
+        opacity: .85;
+      }
+
+      @media (min-width: 900px) {
+        .desktop-slider { display: block; }
+        .mobile-list { display: none; }
+      }
+    `;
+    document.head.appendChild(style);
+
+    // =============================
+    // DESKTOP SLIDER
+    // =============================
+    const desktop = document.createElement("div");
+    desktop.className = "desktop-slider";
+
+    const track = document.createElement("div");
+    track.className = "desktop-track";
+    desktop.appendChild(track);
+
+    events.forEach(ev => {
+      const slide = document.createElement("div");
+      slide.className = "desktop-slide";
+      slide.innerHTML = `
+        <img src="${ev.img}">
+        <div class="desktop-gradient"></div>
+        <div class="desktop-info">
+          <h2>${ev.nombre}</h2>
+          <p>${ev.lugar}</p>
+          <a class="buy-btn" href="${basePath}pages/events/?id=${ev.idEvento}">
+            Comprar
+          </a>
+        </div>
+      `;
+      track.appendChild(slide);
+    });
+
+    let index = 0;
+    setInterval(() => {
+      index = (index + 1) % events.length;
+      track.style.transform = `translateX(-${index * 100}%)`;
+    }, 7000);
+
+    // =============================
+    // MOBILE CARDS
+    // =============================
+    const mobile = document.createElement("div");
+    mobile.className = "mobile-list";
+
+    events.forEach(ev => {
+      const card = document.createElement("a");
+      card.className = "mobile-card";
+      card.href = `${basePath}pages/events/?id=${ev.idEvento}`;
+      card.innerHTML = `
+        <div class="mobile-image">
+          <img src="${ev.img}">
+          <div class="mobile-gradient"></div>
+        </div>
+        <div class="mobile-info">
+          <h3>${ev.nombre}</h3>
+          <p>${ev.lugar}</p>
+          <span class="buy-btn">Comprar</span>
+        </div>
+      `;
+      mobile.appendChild(card);
+    });
+
+    slider.appendChild(desktop);
+    slider.appendChild(mobile);
+
+  } catch (e) {
+    console.error("Slider error:", e);
+  }
 });
