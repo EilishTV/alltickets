@@ -162,9 +162,14 @@ document.addEventListener("DOMContentLoaded", () => {
   cargarEventos();
 });
 
-// Poner el link completo como título
+// -----------------------------
+// 📌 Title como link (SIN https://)
+// -----------------------------
 function setTitleAsLink() {
-  const fullLink = window.location.origin + window.location.pathname; 
+  const fullLink =
+    (window.location.origin + window.location.pathname)
+      .replace(/^https?:\/\//, ""); // ← ACÁ el cambio
+
   document.title = fullLink;
 }
 
