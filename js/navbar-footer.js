@@ -14,6 +14,40 @@ if (
 // 📌 Crear Navbar
 // -----------------------------
 function crearNavbar() {
+  // 🔹 Determinar si estamos en mobile
+  const isMobile = window.innerWidth <= 768;
+
+  // Usuario (desktop)
+  const email = localStorage.getItem("usuario_email");
+  let userHTML = `<a href="${basePath}login/"><i class="fas fa-user"></i> Ingresar</a>`;
+  let misEntradasHTML = '';
+
+  if (email) {
+    const rawData = localStorage.getItem("usuario_" + email);
+    if (rawData) {
+      try {
+        const userData = JSON.parse(rawData);
+        if (userData.firstName) {
+          userHTML = `
+            <span class="navbar-user">
+              <i class="fas fa-user"></i> 
+              <a href="${basePath}account/perfil" style="color:inherit; text-decoration:none;">
+                ${userData.firstName}
+              </a>
+            </span>
+          `;
+          misEntradasHTML = `<a href="${basePath}account/purchases">Mis Entradas</a>`;
+        }
+      } catch {}
+    }
+  }
+
+  // 🔹 En mobile: NO agregar ingresar ni mis entradas
+  if (isMobile) {
+    userHTML = ''; 
+    misEntradasHTML = '';
+  }
+
   const navbarHTML = `
     <nav class="navbar">
       <div class="navbar-logo">
@@ -23,29 +57,130 @@ function crearNavbar() {
       </div>
 
       <div class="navbar-cart">
-        <span id="mis-entradas"></span>
-
-        <span id="user-container">
-          <a href="${basePath}login/">
-            <i class="fas fa-user"></i> Ingresar
-          </a>
-        </span>
+        <span id="mis-entradas">${misEntradasHTML}</span>
+        <span id="user-container">${userHTML}</span>
       </div>
 
-      <div class="navbar-toggle" onclick="toggleMenu()">☰</div>
+      <div class="navbar-toggle">☰</div>
     </nav>
+
+    <!-- 📱 Menu Mobile -->
+    <div id="mobile-menu" style="display:none;"></div>
   `;
 
   const navbarContainer = document.getElementById("navbar-container");
   if (navbarContainer) {
     navbarContainer.innerHTML = navbarHTML;
+
+    // 🔹 Listener para el toggle
+    const toggleBtn = navbarContainer.querySelector(".navbar-toggle");
+    if (toggleBtn) toggleBtn.addEventListener("click", toggleMenu);
   }
 }
 
+
 // -----------------------------
-// 📌 Mostrar usuario desde localStorage
+// 📌 Toggle menú mobile (SOLO CELULARES)
+// -----------------------------
+function toggleMenu() {
+  if (window.innerWidth > 768) return; // desktop: no hace nada
+
+  const menu = document.getElementById("mobile-menu");
+  if (!menu) return;
+
+  // Obtener usuario
+  const email = localStorage.getItem("usuario_email");
+  let userLinks = "";
+
+  if (email) {
+    const rawData = localStorage.getItem("usuario_" + email);
+    if (rawData) {
+      try {
+        const userData = JSON.parse(rawData);
+        if (userData.firstName) {
+          // Usuario logueado en mobile
+          userLinks = `
+            <a href="${basePath}account/perfil">${userData.firstName}</a>
+            <a href="${basePath}account/purchases">Mis entradas</a>
+          `;
+        }
+      } catch {}
+    }
+  }
+
+  // Si no hay usuario logueado
+  if (!userLinks) {
+    userLinks = `<a href="${basePath}login/">Ingresar</a>`;
+  }
+
+  // Siempre agregar soporte
+  userLinks += `<a href="${basePath}pages/contact/">Soporte</a>`;
+
+  // Crear el HTML del menú mobile
+  menu.innerHTML = `
+    <style>
+      #mobile-menu {
+        position: fixed;
+        top: 4.9rem;
+        left: 0;
+        width: 100%;
+        background: #fff;
+        border-top: 1px solid #ddd;
+        z-index: 9999;
+
+        overflow: hidden;
+        max-height: 0;
+        transition: max-height 0.35s ease;
+      }
+
+      #mobile-menu.open {
+        max-height: 300px;
+      }
+
+      #mobile-menu a {
+        text-align: center;
+        display: block;
+        padding: 20px 16px;
+        border-bottom: 1px solid #e5e5e5;
+        color: #000;
+        text-decoration: none;
+        font-size: 15px;
+        transition: background 0.2s;
+      }
+
+      #mobile-menu a:hover {
+        background: rgba(0,0,0,0.05);
+      }
+
+      #mobile-menu a:active {
+        background: rgba(0,0,0,0.1);
+      }
+
+      /* 🔹 Ocultar nav fijo en mobile */
+      @media screen and (max-width: 768px) {
+        #user-container a,
+        #mis-entradas {
+          display: none;
+        }
+      }
+    </style>
+
+    ${userLinks}
+  `;
+
+  // Mostrar y animar
+  menu.style.display = "block";
+  requestAnimationFrame(() => {
+    menu.classList.toggle("open");
+  });
+}
+
+// -----------------------------
+// 📌 Mostrar usuario desde localStorage (SOLO DESKTOP)
 // -----------------------------
 function mostrarUsuarioNavbar() {
+  if (window.innerWidth <= 768) return; // celular: no tocar navbar normal
+
   const email = localStorage.getItem("usuario_email");
   if (!email) return;
 
@@ -66,34 +201,21 @@ function mostrarUsuarioNavbar() {
 
   if (!userContainer) return;
 
-  // Mostrar "Mis Entradas"
   if (misEntradas) {
     misEntradas.innerHTML = `
       <a href="${basePath}account/purchases">Mis Entradas</a>
     `;
   }
 
-  // Mostrar nombre y logout
   userContainer.innerHTML = `
     <span class="navbar-user">
       <i class="fas fa-user"></i> 
       <a href="${basePath}account/perfil" style="color:inherit; text-decoration:none;">
         ${userData.firstName}
+      </a>
+    </span>
   `;
-
-  const logoutBtn = document.getElementById("logout");
-  logoutBtn.addEventListener("click", () => {
-    // limpiar estado local
-    localStorage.removeItem("usuario_email");
-    Object.keys(localStorage)
-      .filter(k => k.startsWith("usuario_"))
-      .forEach(k => localStorage.removeItem(k));
-
-    // recargar
-    location.reload();
-  });
 }
-
 
 // -----------------------------
 // 📌 Crear Footer (NO TOCAR)
@@ -167,14 +289,20 @@ function crearFooter() {
 }
 
 // -----------------------------
-// 📌 Inicializar (CLAVE)
+// 📌 Inicializar todo
 // -----------------------------
-document.addEventListener("DOMContentLoaded", () => {
+function inicializarNavbar() {
   crearNavbar();
-  crearFooter();
+  mostrarUsuarioNavbar();
+}
 
-  // ⬅️ ESTO ES LO QUE LO ARREGLA
-  requestAnimationFrame(() => {
-    mostrarUsuarioNavbar();
-  });
+// Ejecutar al cargar
+document.addEventListener("DOMContentLoaded", () => {
+  inicializarNavbar();
+  crearFooter();
+});
+
+// Ejecutar al cambiar tamaño
+window.addEventListener("resize", () => {
+  inicializarNavbar();
 });
