@@ -1,8 +1,7 @@
 // -----------------------------
-// 📌 Loader
+// 📌 Loader funcional global
 // -----------------------------
 function crearLoader() {
-  // Crear el contenedor del loader
   const loadingDiv = document.createElement('div');
   loadingDiv.id = 'loading';
   loadingDiv.style.cssText = `
@@ -18,7 +17,6 @@ function crearLoader() {
     z-index:9999;
   `;
 
-  // Spinner
   const spinner = document.createElement('div');
   spinner.style.cssText = `
     border:6px solid #f3f3f3;
@@ -31,7 +29,6 @@ function crearLoader() {
   loadingDiv.appendChild(spinner);
   document.body.appendChild(loadingDiv);
 
-  // Animación
   const style = document.createElement('style');
   style.textContent = `
     @keyframes spin {0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
@@ -43,9 +40,20 @@ function crearLoader() {
 function removerLoader() {
   const loader = document.getElementById('loading');
   if(loader) loader.remove();
+
+  // Mostrar todos los contenedores de la página
+  document.querySelectorAll('body > *').forEach(el => {
+    if(el.id !== 'loading') el.style.visibility = 'visible';
+  });
 }
 
-
+// -----------------------------
+// 📌 Limpiar caracteres residuales
+// -----------------------------
+function limpiarContenedores() {
+  const userHeader = document.getElementById('userHeader');
+  if(userHeader) userHeader.innerHTML = ''; // limpia cualquier "<" residual
+}
 
 // -----------------------------
 // 📌 Crear sección de productos
@@ -123,9 +131,6 @@ async function cargarEventos() {
 
   } catch (err) {
     console.error("Error cargando CSV:", err);
-  } finally {
-    const loader = document.getElementById('loading');
-    if (loader) loader.remove();
   }
 }
 
@@ -155,22 +160,40 @@ if (signupForm) {
 }
 
 // -----------------------------
-// 📌 Inicializar todo al cargar
+// 📌 Inicializar toda la página
 // -----------------------------
-document.addEventListener("DOMContentLoaded", () => {
+async function initPage() {
+  // Limpiar caracteres residuales
+  limpiarContenedores();
+
+  // Crear loader y ocultar todo
   crearLoader();
-  cargarEventos();
+
+  // Esperar Firebase Auth (si existe)
+  if (typeof auth !== 'undefined') {
+    await new Promise(resolve => {
+      onAuthStateChanged(auth, () => resolve());
+    });
+  }
+
+  // Esperar a que carguen los eventos
+  await cargarEventos();
+
+  // 🔹 Finalmente remover loader
+  removerLoader();
+}
+
+// Ejecutar todo al cargar
+document.addEventListener("DOMContentLoaded", () => {
+  initPage();
 });
 
 // -----------------------------
 // 📌 Title como link (SIN https://)
-// -----------------------------
 function setTitleAsLink() {
   const fullLink =
     (window.location.origin + window.location.pathname)
-      .replace(/^https?:\/\//, ""); // ← ACÁ el cambio
-
+      .replace(/^https?:\/\//, "");
   document.title = fullLink;
 }
-
 window.addEventListener("DOMContentLoaded", setTitleAsLink);
