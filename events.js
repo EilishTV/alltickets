@@ -1,3 +1,7 @@
+/* =============================
+   EVENTS.JS - CARGA Y COMPRAS
+============================= */
+
 async function cargarEvento() {
   const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/1WZnQmVeQGM1JnSzF_6Cq3ZOHaJf70lJtfHnyZIjLpjI/export?format=csv";
 
@@ -22,19 +26,6 @@ async function cargarEvento() {
     const card = document.querySelector(".event-card");
     const botonComprar = document.querySelector(".event-button");
 
-    const selectSectores = document.createElement("select");
-    selectSectores.classList.add("event-sector");
-
-    const selectTarifas = document.createElement("select");
-    selectTarifas.classList.add("event-tarifa");
-
-    const selectCantidad = document.createElement("select");
-    selectCantidad.classList.add("event-cantidad");
-
-    card.insertBefore(selectSectores, botonComprar);
-    card.insertBefore(selectTarifas, botonComprar);
-    card.insertBefore(selectCantidad, botonComprar);
-
     if (!evento) {
       contenedorEvento.innerHTML = `
         <h3 style="margin-top:6.5rem; color:#6200EA;">
@@ -45,16 +36,23 @@ async function cargarEvento() {
       return;
     }
 
+    // =======================
+    // Mostrar info principal
+    // =======================
     document.title = evento.nombre;
-    imagen.src = evento.img;
+    imagen.src = evento.img || "";
     if (evento.estado) contenedorEvento.querySelector("#estado").textContent = evento.estado;
 
-    /* ========= DOC (SOLO TEXTO) ========= */
+    // =======================
+    // Google Doc
+    // =======================
     if (evento.doc_id) {
       cargarGoogleDoc(evento.doc_id);
     }
 
-    /* ========= MAPA DESDE SHEETS ========= */
+    // =======================
+    // Mapa desde Sheets
+    // =======================
     if (evento.mapa_img) {
       const mapContainer = document.querySelector(".event-doc-map");
       if (mapContainer) {
@@ -68,7 +66,9 @@ async function cargarEvento() {
       }
     }
 
-    /* ========= FECHAS ========= */
+    // =======================
+    // Fechas
+    // =======================
     if (evento.fechas) {
       selectFechas.innerHTML = "";
       evento.fechas.split(";").forEach(fecha => {
@@ -78,10 +78,31 @@ async function cargarEvento() {
       });
     }
 
-    /* ========= SECTORES / TARIFAS ========= */
+    // =======================
+    // Sectores / Tarifas / Cantidad
+    // =======================
     const sectores = evento.sectores ? evento.sectores.split(";") : [];
     const tarifas = evento.tarifas ? evento.tarifas.split(";") : [];
 
+    // Crear selects si no existen
+    const selectSectores = document.createElement("select");
+    selectSectores.classList.add("event-sector");
+    const selectTarifas = document.createElement("select");
+    selectTarifas.classList.add("event-tarifa");
+    const selectCantidad = document.createElement("select");
+    selectCantidad.classList.add("event-cantidad");
+
+    card.insertBefore(selectSectores, botonComprar);
+    card.insertBefore(selectTarifas, botonComprar);
+    card.insertBefore(selectCantidad, botonComprar);
+
+    // Llenar sectores
+    selectSectores.innerHTML = "";
+    sectores.forEach(sec => {
+      selectSectores.innerHTML += `<option>${sec}</option>`;
+    });
+
+    // Actualizar tarifas y cantidad según sector seleccionado
     function actualizarTarifaCantidad() {
       selectTarifas.innerHTML = "";
       selectCantidad.innerHTML = "";
@@ -89,7 +110,6 @@ async function cargarEvento() {
       const index = selectSectores.selectedIndex;
       if (index >= 0) {
         const tarifa = tarifas[index] || "0";
-
         selectTarifas.innerHTML = `<option>$${tarifa}</option>`;
 
         for (let i = 1; i <= 4; i++) {
@@ -98,15 +118,12 @@ async function cargarEvento() {
       }
     }
 
-    selectSectores.innerHTML = "";
-    sectores.forEach(sec => {
-      selectSectores.innerHTML += `<option>${sec}</option>`;
-    });
-
     selectSectores.addEventListener("change", actualizarTarifaCantidad);
     if (sectores.length) actualizarTarifaCantidad();
 
-    /* ========= AGOTADO ========= */
+    // =======================
+    // Entradas agotadas
+    // =======================
     if (evento.agotado?.toUpperCase() === "TRUE") {
       [selectSectores, selectTarifas, selectCantidad, selectFechas, botonComprar]
         .forEach(el => el.style.display = "none");
@@ -125,6 +142,16 @@ async function cargarEvento() {
       card.insertBefore(divAgotado, card.firstChild);
     }
 
+    // =======================
+    // Comprar y guardar en localStorage
+    // =======================
+    if (botonComprar) {
+      botonComprar.addEventListener("click", (e) => {
+        e.preventDefault();
+        agregarEntrada(evento);
+      });
+    }
+
   } catch (err) {
     console.error("Error cargando CSV:", err);
   } finally {
@@ -132,7 +159,7 @@ async function cargarEvento() {
   }
 }
 
-/* ========= GOOGLE DOC (SOLO TEXTO) ========= */
+/* ========= GOOGLE DOC ========= */
 function cargarGoogleDoc(docId) {
   const textContainer = document.querySelector(".event-doc-text");
   if (!textContainer) return;
@@ -145,6 +172,32 @@ function cargarGoogleDoc(docId) {
 
   textContainer.innerHTML = "";
   textContainer.appendChild(iframe);
+}
+
+/* ========= AGREGAR ENTRADAS AL LOCALSTORAGE ========= */
+function agregarEntrada(evento) {
+  const selectFechas = document.querySelector(".event-dates");
+  const selectSectores = document.querySelector(".event-sector");
+  const selectTarifas = document.querySelector(".event-tarifa");
+  const selectCantidad = document.querySelector(".event-cantidad");
+
+  if (!selectFechas || !selectSectores || !selectTarifas || !selectCantidad) return;
+
+  const nuevaEntrada = {
+    nombre: evento.nombre,
+    fechaCompra: selectFechas.value,
+    venue: evento.lugar || "",
+    img: evento.img,
+    sector: selectSectores.value,
+    cantidad: parseInt(selectCantidad.value),
+    id: Date.now()
+  };
+
+  const entradasGuardadas = JSON.parse(localStorage.getItem("misEntradas")) || [];
+  entradasGuardadas.push(nuevaEntrada);
+  localStorage.setItem("misEntradas", JSON.stringify(entradasGuardadas));
+
+  alert(`¡Entrada comprada!\n${nuevaEntrada.nombre} - ${nuevaEntrada.sector} x${nuevaEntrada.cantidad}`);
 }
 
 cargarEvento();

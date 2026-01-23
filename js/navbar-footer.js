@@ -280,7 +280,7 @@ function crearFooter() {
         <a href="#">Política de Cookies</a>
       </div>
 
-      <div class="footer-bottom">© 2025 crowder</div>
+      <div class="footer-bottom">© 2026 crowder</div>
     </div>
   </footer>
   `;
