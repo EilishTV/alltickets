@@ -121,26 +121,42 @@ async function cargarEvento() {
     selectSectores.addEventListener("change", actualizarTarifaCantidad);
     if (sectores.length) actualizarTarifaCantidad();
 
-    // =======================
-    // Entradas agotadas
-    // =======================
-    if (evento.agotado?.toUpperCase() === "TRUE") {
-      [selectSectores, selectTarifas, selectCantidad, selectFechas, botonComprar]
-        .forEach(el => el.style.display = "none");
+// =======================
+// Estado del evento
+// =======================
+const estado = (evento.agotado || "").toString().toUpperCase().trim();
 
-      const divAgotado = document.createElement("div");
-      divAgotado.textContent = "AGOTADO";
-      divAgotado.style.cssText = `
-        width:100%;
-        padding:1rem;
-        text-align:center;
-        font-weight:bold;
-        background:#6200EA;
-        color:#fff;
-        margin-bottom:1rem;
-      `;
-      card.insertBefore(divAgotado, card.firstChild);
-    }
+const estadosBloqueantes = ["AGOTADO", "CANCELADO", "POSPUESTO", "PROXIMAMENTE", "EVENTO FINALIZADO"];
+
+if (estadosBloqueantes.includes(estado)) {
+  [selectSectores, selectTarifas, selectCantidad, selectFechas, botonComprar]
+    .forEach(el => el.style.display = "none");
+
+  const divEstado = document.createElement("div");
+  divEstado.textContent = estado;
+
+  let color = "#6200EA"; // default (AGOTADO)
+
+  if (estado === "CANCELADO") color = "#B00020";
+  if (estado === "POSPUESTO") color = "#FF8F00";
+  if (estado === "PROXIMAMENTE") color = "#00838F";
+  if (estado === "EVENTO FINALIZADO") color = "#455A64"; // gris
+
+  divEstado.style.cssText = `
+    width:100%;
+    box-sizing:border-box; /* 🔥 evita que el padding agrande el ancho */
+    padding:1rem;
+    text-align:center;
+    font-weight:bold;
+    background:${color};
+    color:#fff;
+    margin-bottom:1rem;
+    letter-spacing:1px;
+  `;
+
+  card.insertBefore(divEstado, card.firstChild);
+}
+
 
     // =======================
     // Comprar y guardar en localStorage
